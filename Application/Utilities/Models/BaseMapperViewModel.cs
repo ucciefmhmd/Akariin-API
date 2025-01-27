@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using Domain.Contractors;
 using Domain.Identity;
 using Domain.Models;
-using Domain.Models.Contractors;
 using Mapster;
 using System;
 using System.Collections.Generic;

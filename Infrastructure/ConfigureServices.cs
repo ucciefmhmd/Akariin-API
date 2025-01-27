@@ -19,20 +19,9 @@ public static class ConfigureServices
     {
 
         services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+                sqlOptions => sqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-                 options.UseSqlServer(configuration.GetConnectionString(
-//#if DEBUG
-"DefaultConnection"
-//#elif LIVE || RELEASE
-//"LiveConnection"
-//#elif LIVESTAGE
-//"StageConnection"
-//#else
-//"LocalConnection"
-//#endif
-                     ),
-
-                 builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
         services.AddScoped<ApplicationDbContextInitialiser>();
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
         services.AddDefaultIdentity<ApplicationUser>()

@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualBasic;
 using Domain.Common;
-using Domain.Contractors;
 using Domain.Identity;
 using System;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace Domain.Models.Contractors
+namespace Domain.Contractors
 {
     public class ModelBase<T> : IModelBase<T>
     {

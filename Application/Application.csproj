@@ -25,4 +25,9 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Bill\Commends\" />
+    <Folder Include="Bill\Queries\GetById\" />
+  </ItemGroup>
+
 </Project>

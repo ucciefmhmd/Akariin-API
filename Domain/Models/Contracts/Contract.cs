@@ -1,0 +1,31 @@
+﻿using Domain.Contractors;
+using Domain.Models.RealEstateUnits;
+using Domain.Models.Tenants;
+using System.ComponentModel.DataAnnotations.Schema;
+using static Domain.Common.Enums.ContractEnum;
+
+namespace Domain.Models.Contracts
+{
+    public class Contract : ModelBase<long>
+    {
+        public DateOnly StartDate { get; set; }
+        public DateOnly EndDate { get; set; }
+        public DateOnly DateOfConclusion { get; set; }
+        public TimeOnly Duration { get; set; }
+        public long Number { get; set; }
+        public ContractType Type { get; set; }
+        public TerminationMethod TerminationMethod { get; set; }
+
+        // Foreign Keys
+        [ForeignKey(nameof(RealEstateUnit))]
+        public long RealEstateUnitId { get; set; }
+
+        [ForeignKey(nameof(Tenant))]
+        public long TenantId { get; set; }
+
+        // Navigation Properties
+        public virtual RealEstateUnit RealEstateUnit { get; set; }
+        public virtual Tenant Tenant { get; set; }
+    }
+
+}

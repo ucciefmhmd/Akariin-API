@@ -7,7 +7,6 @@ using Infrastructure.Common.Extensions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Domain.Models;
-using Domain.Models.Contractors;
 
 namespace Infrastructure.Interceptors;
 

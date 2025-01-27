@@ -3,22 +3,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Application.Services.UserService;
-using Application.Common.User.Commands.UpdateUserRoles;
-using Application.Common.User.Queries.GetUser;
 using Application.Utilities.Models;
-using Domain.Common;
-using Domain.Common.Constants;
 using Domain.Identity;
 using Infrastructure;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services.UserService
 {

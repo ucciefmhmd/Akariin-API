@@ -48,7 +48,7 @@ public static class ConfigureServices
         services.AddApplicationServices(configuration);
 
         //~ Configure JWT settings from the application configuration
-        services.Configure<Application.Common.User.Commands.Login.JWT>(configuration.GetSection("JWT"));
+        //services.Configure<Application.Common.User.Commands.Login.JWT>(configuration.GetSection("JWT"));
 
         //~ Add CORS policy to allow any origin, header, and method
         //services.AddCors(options =>

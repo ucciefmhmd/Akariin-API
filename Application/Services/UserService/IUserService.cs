@@ -1,4 +1,4 @@
-﻿using Application.Common.User.Queries.GetUser;
+﻿
 using Application.Utilities.Models;
 using Domain.Common;
 using Domain.Identity;

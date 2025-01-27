@@ -4,9 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using Domain.Models.Professionals;
-using Domain.Models.Products;
-using Domain.Models.Settings;
 
 namespace Domain.Identity;
 
@@ -57,16 +54,11 @@ public class ApplicationUser : IdentityUser
 
     [NotMapped]
     public IList<string> Roles { get; set; }
-    //Contact Info
-
-    public Guid? DistrictId { get; set; }
-    public virtual District? District { get; set; }
     public string? ZIP { get; set; }
     // userPro
     public string? AddressLine1 { get; set; }
     public string? AddressLine2 { get; set; }
     public string? Fax { get; set; }
-
 
     //social media
     public string? Facebook { get; set; }
@@ -84,17 +76,6 @@ public class ApplicationUser : IdentityUser
     public string? BillingFullNameInEnglish { get; set; }
     public string? BillingMainPhoneNumber { get; set; }
     public string? BillingAlternativePhoneNumber { get; set; }
-
-
-    public virtual ICollection<ApplicationUserCity> ApplicationUserCities { get; set; } = new List<ApplicationUserCity>();
-
-    public virtual ICollection<ApplicationUserService> ApplicationUserServices { get; set; } = new List<ApplicationUserService>();
-
-
-    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
-    public virtual ICollection<ShippingAddress> ShippingAddresses { get; set; } = new List<ShippingAddress>();
-
-
 
 
     [NotMapped]
