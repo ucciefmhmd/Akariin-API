@@ -3,7 +3,6 @@ using Domain.Common;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Identity;
 
@@ -37,20 +36,9 @@ public class ApplicationUser : IdentityUser
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? AboutMe { get; set; }
-    public string? MyFavStyle { get; set; }
-    public string? MyNextHouseProject { get; set; }
-
-    public string? LicenseNumber { get; set; }
     public string? BusinessDescription { get; set; }
     public string? CertificationAndAwards { get; set; }
     public string? Affiliations { get; set; }
-
-    [Precision(18,4)]
-    public decimal? JobCostFrom { get; set; }
-    [Precision(18, 4)]
-    public decimal? JobCostTo { get; set; }
-    public string? CostDetails { get; set; }
-
 
     [NotMapped]
     public IList<string> Roles { get; set; }

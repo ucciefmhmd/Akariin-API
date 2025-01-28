@@ -21,13 +21,12 @@ namespace Configurations
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/Ideas/swagger.json", "Ideas API v1");
-
-                c.SwaggerEndpoint("/swagger/Professional/swagger.json", "Professional API v1");
-                c.SwaggerEndpoint("/swagger/Products/swagger.json", "Products API v1");
-                c.SwaggerEndpoint("/swagger/Settings/swagger.json", "Settings API v1");
-                c.SwaggerEndpoint("/swagger/Chat/swagger.json", "Chat API v1");
-                c.SwaggerEndpoint("/swagger/Common/swagger.json", "Common API v1");
+                c.SwaggerEndpoint("/swagger/RealEstate/swagger.json", "Real Estate API v1");
+                c.SwaggerEndpoint("/swagger/Owner/swagger.json", "Owner API v1");
+                c.SwaggerEndpoint("/swagger/Contract/swagger.json", "Contract API v1");
+                c.SwaggerEndpoint("/swagger/Bill/swagger.json", "Bill API v1");
+                c.SwaggerEndpoint("/swagger/RealEstateUnit/swagger.json", "Real Estate Unit API v1");
+                c.SwaggerEndpoint("/swagger/Tenant/swagger.json", "Tenant API v1");
 
                 c.RoutePrefix = "swagger";
                 c.DocExpansion(DocExpansion.None);

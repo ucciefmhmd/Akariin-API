@@ -26,7 +26,6 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
         ) : base(options,operationalStoreOptions)
     {
         this._auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
-        
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

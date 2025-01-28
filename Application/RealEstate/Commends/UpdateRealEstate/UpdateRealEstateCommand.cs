@@ -26,6 +26,7 @@ namespace Application.RealEstate.Commends.UpdateRealEstate
                     return new UpdateRealEstateCommandResult
                     {
                         IsSuccess = false,
+                        Id = request.Id,
                         Errors = { "Real estate not found." }
                     };
                 }

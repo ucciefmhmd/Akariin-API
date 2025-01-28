@@ -1,4 +1,3 @@
-using API.Hubs;
 using Configurations;
 
 var builder = WebApplication.CreateBuilder(args);

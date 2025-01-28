@@ -109,42 +109,42 @@ public static class ConfigureServices
         //~ Add Swagger/OpenAPI services for generating API documentation
         services.AddSwaggerGen(swagger =>
         {
-            swagger.SwaggerDoc("Ideas", new OpenApiInfo
+            swagger.SwaggerDoc("RealEstate", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Ideas API",
+                Title = "Real Estate API",
             });
             
             
-            swagger.SwaggerDoc("Professional", new OpenApiInfo
+            swagger.SwaggerDoc("RealEstateUnit", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Professional API",
+                Title = "Real Estate Unit API",
             });
             
             
-            swagger.SwaggerDoc("Products", new OpenApiInfo
+            swagger.SwaggerDoc("Bill", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Products API",
+                Title = "Bill API",
             });
             
-            swagger.SwaggerDoc("Settings", new OpenApiInfo
+            swagger.SwaggerDoc("Contract", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Settings API",
+                Title = "Contract API",
             });
             
-            swagger.SwaggerDoc("Chat", new OpenApiInfo
+            swagger.SwaggerDoc("Owner", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Chat API",
+                Title = "Owner API",
             });
 
-            swagger.SwaggerDoc("Common", new OpenApiInfo
+            swagger.SwaggerDoc("Tenant", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Common API",
+                Title = "Tenant API",
             });
 
             //~ Add custom document filters
