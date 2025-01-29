@@ -6,9 +6,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Bill.Commends.Add
 {
-    public record AddBillCommend(CreateBillDto dto) : IRequest<AddBillCommendResult>;
+    public record AddBillCommand(CreateBillDto dto) : IRequest<AddBillCommandResult>;
 
-    public record AddBillCommendResult : BaseCommandResult
+    public record AddBillCommandResult : BaseCommandResult
     {
         public long Id { get; set; }
     }
@@ -23,9 +23,9 @@ namespace Application.Bill.Commends.Add
         public long ContractId { get; set; }
     }
 
-    public class AddBillCommendHandler(ApplicationDbContext _dbContext) : IRequestHandler<AddBillCommend, AddBillCommendResult>
+    public class AddBillCommandHandler(ApplicationDbContext _dbContext) : IRequestHandler<AddBillCommand, AddBillCommandResult>
     {
-        public async Task<AddBillCommendResult> Handle(AddBillCommend request, CancellationToken cancellationToken)
+        public async Task<AddBillCommandResult> Handle(AddBillCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace Application.Bill.Commends.Add
 
                 if (!isValid)
                 {
-                    return new AddBillCommendResult
+                    return new AddBillCommandResult
                     {
                         IsSuccess = false,
                         Errors = validationResults.Select(vr => vr.ErrorMessage).ToList(),
@@ -58,7 +58,7 @@ namespace Application.Bill.Commends.Add
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                return new AddBillCommendResult
+                return new AddBillCommandResult
                 {
                     IsSuccess = true,
                     Id = _bill.Id
@@ -66,7 +66,7 @@ namespace Application.Bill.Commends.Add
             }
             catch (Exception ex)
             {
-                return new AddBillCommendResult
+                return new AddBillCommandResult
                 {
                     IsSuccess = false,
                     Errors = { ex.Message },

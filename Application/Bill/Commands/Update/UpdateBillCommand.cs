@@ -8,16 +8,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Bill.Commends.Update
 {
-    public record UpdaeBillCommend(BillDto dto) : IRequest<UpdaeBillCommendResult>;
+    public record UpdateBillCommand(BillDto dto) : IRequest<UpdateBillCommandResult>;
 
-    public record UpdaeBillCommendResult : BaseCommandResult
+    public record UpdateBillCommandResult : BaseCommandResult
     {
         public long Id { get; set; }
     }
 
-    public class UploadBillCommendHandler(ApplicationDbContext _dbContext) : IRequestHandler<UpdaeBillCommend, UpdaeBillCommendResult>
+    public class UpdateBillCommandHandler(ApplicationDbContext _dbContext) : IRequestHandler<UpdateBillCommand, UpdateBillCommandResult>
     {
-        public async Task<UpdaeBillCommendResult> Handle(UpdaeBillCommend request, CancellationToken cancellationToken)
+        public async Task<UpdateBillCommandResult> Handle(UpdateBillCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -25,7 +25,7 @@ namespace Application.Bill.Commends.Update
 
                 if (bill == null)
                 {
-                    return new UpdaeBillCommendResult
+                    return new UpdateBillCommandResult
                     {
                         IsSuccess = false,
                         Errors = { "Bill not found." }
@@ -45,7 +45,7 @@ namespace Application.Bill.Commends.Update
 
                 if (!isValid)
                 {
-                    return new UpdaeBillCommendResult
+                    return new UpdateBillCommandResult
                     {
                         IsSuccess = false,
                         Errors = validationResults.Select(vr => vr.ErrorMessage).ToList(),
@@ -57,7 +57,7 @@ namespace Application.Bill.Commends.Update
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                return new UpdaeBillCommendResult
+                return new UpdateBillCommandResult
                 {
                     IsSuccess = true,
                     Id = bill.Id
@@ -66,7 +66,7 @@ namespace Application.Bill.Commends.Update
             }
             catch (Exception ex)
             {
-                return new UpdaeBillCommendResult
+                return new UpdateBillCommandResult
                 {
                     IsSuccess = false,
                     Errors = { ex.Message }

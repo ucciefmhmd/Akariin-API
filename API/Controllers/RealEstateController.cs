@@ -11,14 +11,8 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RealEstateController : ControllerBase
+    public class RealEstateController(IMediator _mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-
-        public RealEstateController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
 
         [HttpGet("GetAllRealEstate")]
         public async Task<ActionResult<GetAllRealEstateQueryResult>> GetAll()

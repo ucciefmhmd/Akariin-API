@@ -11,8 +11,8 @@ using static Domain.Common.Enums.OwnerEnum;
 
 namespace Application.Owner.Commends.Add
 {
-    public record AddOwnerCommed(CreateOnwerDto createOnwerDto) : IRequest<AddOwnerCommedResult>;
-    public record AddOwnerCommedResult : BaseCommandResult
+    public record AddOwnerCommand(CreateOnwerDto createOnwerDto) : IRequest<AddOwnerCommandResult>;
+    public record AddOwnerCommandResult : BaseCommandResult
     {
         public long Id { get; set; }
     }
@@ -31,9 +31,9 @@ namespace Application.Owner.Commends.Add
         public string IdNumber { get; set; }
     }
 
-    public class AddOwnerCommedHandler(ApplicationDbContext _dbContext) : IRequestHandler<AddOwnerCommed, AddOwnerCommedResult>
+    public class AddOwnerCommandResultHandler(ApplicationDbContext _dbContext) : IRequestHandler<AddOwnerCommand, AddOwnerCommandResult>
     {
-        public async Task<AddOwnerCommedResult> Handle(AddOwnerCommed request, CancellationToken cancellationToken)
+        public async Task<AddOwnerCommandResult> Handle(AddOwnerCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace Application.Owner.Commends.Add
 
                 if (!isValid)
                 {
-                    return new AddOwnerCommedResult
+                    return new AddOwnerCommandResult
                     {
                         IsSuccess = false,
                         Errors = validationResults.Select(vr => vr.ErrorMessage).ToList(),
@@ -69,7 +69,7 @@ namespace Application.Owner.Commends.Add
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                return new AddOwnerCommedResult
+                return new AddOwnerCommandResult
                 {
                     IsSuccess = true,
                     Id = _owner.Id
@@ -77,7 +77,7 @@ namespace Application.Owner.Commends.Add
             }
             catch (Exception ex)
             {
-                return new AddOwnerCommedResult
+                return new AddOwnerCommandResult
                 {
                     IsSuccess = false,
                     Errors = { ex.Message },

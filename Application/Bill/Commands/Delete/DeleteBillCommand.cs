@@ -4,16 +4,16 @@ using MediatR;
 
 namespace Application.Bill.Commends.Delete
 {
-    public record  DeleteBillCommend(long Id) : IRequest<DeleteBillCommendResult>;
+    public record  DeleteBillCommand(long Id) : IRequest<DeleteBillCommandResult>;
 
-    public record DeleteBillCommendResult : BaseCommandResult
+    public record DeleteBillCommandResult : BaseCommandResult
     {
         public long Id { get; set; }
     }
 
-    public class DeleteBillCommendHandler(ApplicationDbContext _dbContext) : IRequestHandler<DeleteBillCommend, DeleteBillCommendResult>
+    public class DeleteBillCommandHandler(ApplicationDbContext _dbContext) : IRequestHandler<DeleteBillCommand, DeleteBillCommandResult>
     {
-        public async Task<DeleteBillCommendResult> Handle(DeleteBillCommend request, CancellationToken cancellationToken)
+        public async Task<DeleteBillCommandResult> Handle(DeleteBillCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -21,7 +21,7 @@ namespace Application.Bill.Commends.Delete
                 
                 if (bill == null)
                 {
-                    return new DeleteBillCommendResult
+                    return new DeleteBillCommandResult
                     {
                         IsSuccess = false,
                         Errors = { "Bill not found." }
@@ -32,7 +32,7 @@ namespace Application.Bill.Commends.Delete
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                return new DeleteBillCommendResult
+                return new DeleteBillCommandResult
                 {
                     IsSuccess = true,
                     Id = bill.Id
@@ -41,7 +41,7 @@ namespace Application.Bill.Commends.Delete
             }
             catch (Exception ex)
             {
-                return new DeleteBillCommendResult
+                return new DeleteBillCommandResult
                 {
                     IsSuccess = false,
                     Errors = { ex.Message }
