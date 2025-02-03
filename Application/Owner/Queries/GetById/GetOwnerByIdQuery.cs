@@ -25,13 +25,11 @@ namespace Application.Owner.Queries.GetById
                     {
                         Id = o.Id,
                         Name = o.Name,
-                        Email = o.Email,
                         City = o.City,
                         Address = o.Address,
                         PhoneNumber = o.PhoneNumber,
                         Birthday = o.Birthday,
                         Gender = o.Gender,
-                        IdNumber = o.IdNumber,
                         Nationality = o.Nationality
                     }).FirstOrDefaultAsync(cancellationToken);
 

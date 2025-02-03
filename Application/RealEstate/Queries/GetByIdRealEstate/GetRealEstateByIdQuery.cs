@@ -25,9 +25,9 @@ namespace Application.RealEstate.Queries.GetByIdRealEstate
                     {
                         Id = re.Id,
                         Name = re.Name,
-                        Type = re.Type.ToString(),
-                        Category = re.Category.ToString(),
-                        Service = re.Service.ToString(),
+                        Type = re.Type,
+                        Category = re.Category,
+                        Service = re.Service,
                         OwnerId = re.Owner.Id
                     })
                     .FirstOrDefaultAsync(cancellationToken);

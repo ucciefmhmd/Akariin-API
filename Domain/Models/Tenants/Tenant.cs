@@ -1,7 +1,6 @@
 ﻿using Domain.Contractors;
 using Domain.Models.RealEstateUnits;
 using System.ComponentModel.DataAnnotations;
-using static Domain.Common.Enums.OwnerEnum;
 
 namespace Domain.Models.Tenants
 {
@@ -26,7 +25,7 @@ namespace Domain.Models.Tenants
         public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Gender is required.")]
-        public Gender Gender { get; set; }
+        public string Gender { get; set; }
         public DateOnly Birthday { get; set; }
         public string Nationality { get; set; }
         public string IdNumber { get; set; }

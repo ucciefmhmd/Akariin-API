@@ -1,31 +1,29 @@
-﻿
+﻿using Application.Utilities.Extensions;
+using Application.Utilities.Filter;
 using Application.Utilities.Models;
+using Application.Utilities.Sort;
 using Infrastructure;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using static Domain.Common.Enums.OwnerEnum;
 
 namespace Application.Owner.Queries.GetAll
 {
-    public record GetAllOwnersQuery : IRequest<GetAllOwnersQueryResult>;
+    public record GetAllOwnersQuery : BasePaginatedQuery, IRequest<GetAllOwnersQueryResult>;
 
     public record GetAllOwnersQueryResult : BaseCommandResult
     {
-        public List<OwnerDto> OwnerDtos { get; set; }
+        public BasePaginatedList<OwnerDto> OwnerDtos { get; set; }
     }
     public record OwnerDto
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public string Email { get; set; }
-        public string City { get; set; }
-        public string Address { get; set; }
+        public string? City { get; set; }
+        public string? Address { get; set; }
         public string PhoneNumber { get; set; }
-        public Gender Gender { get; set; }
-        public DateOnly Birthday { get; set; }
-        public string Nationality { get; set; }
+        public string? Gender { get; set; }
+        public DateOnly? Birthday { get; set; }
+        public string? Nationality { get; set; }
         public string Role { get; set; }
-        public string IdNumber { get; set; }
     }
     public class GetAllOwnersQueryHandler(ApplicationDbContext _dbContext) : IRequestHandler<GetAllOwnersQuery, GetAllOwnersQueryResult>
     {
@@ -34,21 +32,22 @@ namespace Application.Owner.Queries.GetAll
             try
             {
                 var _owners = await _dbContext.Owners
+                    .Search(request.SearchTerm)
                     .Select(o => new OwnerDto
                     {
                         Id = o.Id,
                         Name = o.Name,
-                        Email = o.Email,
                         City = o.City,
                         Address = o.Address,
                         PhoneNumber = o.PhoneNumber,
                         Gender = o.Gender,
                         Birthday = o.Birthday,
                         Nationality = o.Nationality,
-                        Role = o.Role,
-                        IdNumber = o.IdNumber
+                        Role = o.Role
                     })
-                    .ToListAsync(cancellationToken);
+                    .Filter(request.Filters)
+                    .Sort(request.Sorts ?? new List<SortedQuery>() { new SortedQuery() { PropertyName = "Name", Direction = SortDirection.ASC } })
+                    .ToPaginatedListAsync(request.PageNumber, request.PageSize);
 
                 return new GetAllOwnersQueryResult
                 {

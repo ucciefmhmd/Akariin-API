@@ -1,9 +1,6 @@
-﻿using Application.RealEstate.Commends.AddRealEstate;
-using Application.Utilities.Models;
+﻿using Application.Utilities.Models;
 using Infrastructure;
 using MediatR;
-using static Domain.Common.Enums.RealEstateUnitEnum;
-
 namespace Application.RealEstateUnit.Commends.Add
 {
     public record AddRealEstateUnitCommand(CreateRealestateUnitDto dto): IRequest<AddRealEstateUnitCommendResult>;
@@ -19,8 +16,8 @@ namespace Application.RealEstateUnit.Commends.Add
         public string Area { get; set; }
         public string Floor { get; set; }
         public string UnitNumber { get; set; }
-        public RealEstateUnitRooms NumOfRooms { get; set; }
-        public RealEstateUnitType Type { get; set; }
+        public string NumOfRooms { get; set; }
+        public string Type { get; set; }
         public long TenantId { get; set; }
     }
 

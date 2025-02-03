@@ -7,16 +7,17 @@ using Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace API.Controllers.Contract
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiExplorerSettings(GroupName = "Contract")]
     public class ContractController(IMediator _mediator) : ControllerBase
     {
         [HttpGet("GetAllContract")]
-        public async Task<ActionResult<GetAllContractQueryResult>> GetAll()
+        public async Task<ActionResult<GetAllContractQueryResult>> GetAll([FromBody] GetAllContractQuery query)
         {
-            return await this.HandleCommandResult(_mediator.Send(new GetAllContractQuery()));
+            return await this.HandleCommandResult(_mediator.Send(query));
         }
         [HttpGet("{id:long}")]
         public async Task<ActionResult<GetContractByIdQueryResult>> GetById(long id)

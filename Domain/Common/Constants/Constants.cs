@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 
 namespace Domain.Common.Constants
 {
-    public class Roles : Admin
+    public class Roles
     {
-
         public const string USER = "User";
-        public const string USERPRO = "UserPro";
-        public const string COMPANY = "Company";
-        public const string CREATE = "Create";
-        public const string UPDATE = "Update";
-        public const string DELETE = "Delete";
+        public const string SUB_ADMIN = "SubAdmin";
+        public const string ADMIN = "Admin";
 
         public static List<string> GetAllRoles()
         {
@@ -38,16 +29,10 @@ namespace Domain.Common.Constants
         }
     }
 
-    public class Admin
+    public static class Policies
     {
-        public const string ADMIN = "Admin";
-    }
-    public class Policies
-    {
+        public const string SUPER_ADMIN_POLICY = "Super_ADMIN_POLICY";
         public const string ADMIN_POLICY = "Admin_Policy";
         public const string USER_POLICY = "User_Policy";
-        public const string USERPRO_POLICY = "UserPro_Policy";
-        public const string COMPANY_POLICY = "Company_Policy";
-
     }
 }

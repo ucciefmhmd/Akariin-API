@@ -1,18 +1,17 @@
-﻿using Application.RealEstateUnit.Queries.GetAll;
+﻿using Application.Utilities.Extensions;
+using Application.Utilities.Filter;
 using Application.Utilities.Models;
+using Application.Utilities.Sort;
 using Infrastructure;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System;
-using static Domain.Common.Enums.OwnerEnum;
 
 namespace Application.Tenant.Queries.GetAll
 {
-    public record GetAllTenantQuery : IRequest<GetAllTenantQueryResult>;
+    public record GetAllTenantQuery : BasePaginatedQuery, IRequest<GetAllTenantQueryResult>;
 
     public record GetAllTenantQueryResult : BaseCommandResult
     {
-        public List<TenantDto> dto { get; init; }
+        public BasePaginatedList<TenantDto> dto { get; init; }
     }
 
     public record TenantDto
@@ -23,7 +22,7 @@ namespace Application.Tenant.Queries.GetAll
         public string City { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
-        public Gender Gender { get; set; }
+        public string Gender { get; set; }
         public DateOnly Birthday { get; set; }
         public string Nationality { get; set; }
         public string IdNumber { get; set; }
@@ -36,6 +35,7 @@ namespace Application.Tenant.Queries.GetAll
             try
             {
                 var tenant = await _dbContext.Tenant
+                    .Search(request.SearchTerm)
                     .Select(t => new TenantDto
                     {
                         Id = t.Id,
@@ -49,7 +49,9 @@ namespace Application.Tenant.Queries.GetAll
                         Nationality = t.Nationality,
                         IdNumber = t.IdNumber
                     })
-                    .ToListAsync(cancellationToken);
+                    .Filter(request.Filters)
+                    .Sort(request.Sorts ?? new List<SortedQuery>() { new SortedQuery() { PropertyName = "Name", Direction = SortDirection.ASC } })
+                    .ToPaginatedListAsync(request.PageNumber, request.PageSize);
 
                 return new GetAllTenantQueryResult
                 {

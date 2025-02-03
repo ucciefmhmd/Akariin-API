@@ -3,9 +3,7 @@ using Domain.Common.Constants;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace Configurations;
@@ -121,8 +119,8 @@ public static class ConfigureServices
                 Version = "v1",
                 Title = "Real Estate Unit API",
             });
-            
-            
+
+
             swagger.SwaggerDoc("Bill", new OpenApiInfo
             {
                 Version = "v1",
@@ -145,6 +143,12 @@ public static class ConfigureServices
             {
                 Version = "v1",
                 Title = "Tenant API",
+            });
+
+            swagger.SwaggerDoc("Common", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Common API",
             });
 
             //~ Add custom document filters

@@ -1,15 +1,18 @@
-﻿using Application.Utilities.Models;
+﻿using Application.Utilities.Extensions;
+using Application.Utilities.Filter;
+using Application.Utilities.Models;
+using Application.Utilities.Sort;
 using Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Bill.Queries.GetAll
 {
-    public record GetAllBillQuery : IRequest<GetAllBillQueryResult>;
+    public record GetAllBillQuery : BasePaginatedQuery, IRequest<GetAllBillQueryResult>;
 
     public record GetAllBillQueryResult : BaseCommandResult
     {
-        public List<BillDto> BillDtos { get; set; }
+        public BasePaginatedList<BillDto> BillDtos { get; set; }
     }
 
     public record BillDto
@@ -32,6 +35,7 @@ namespace Application.Bill.Queries.GetAll
             {
                 var bills = await _dbContext.Bills
                                             .Include(b => b.Contract)
+                                            .Search(request.SearchTerm)
                                             .Select(b => new BillDto
                                             {
                                                 Id = b.Id,
@@ -42,7 +46,10 @@ namespace Application.Bill.Queries.GetAll
                                                 Discount = b.Discount,
                                                 Tax = b.Tax,
                                                 ContractId = b.Contract.Id
-                                            }).ToListAsync(cancellationToken);
+                                            })
+                                            .Filter(request.Filters)
+                                            .Sort(request.Sorts ?? new List<SortedQuery>() { new SortedQuery() { PropertyName = "Number", Direction = SortDirection.ASC } })
+                                            .ToPaginatedListAsync(request.PageNumber, request.PageSize);
 
                 return new GetAllBillQueryResult
                 {

@@ -1,13 +1,7 @@
 ﻿using Application.Utilities.Models;
 using Infrastructure;
 using MediatR;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Domain.Common.Enums.OwnerEnum;
 
 namespace Application.Owner.Commends.Add
 {
@@ -20,15 +14,14 @@ namespace Application.Owner.Commends.Add
     public record CreateOnwerDto
     {
         public string Name { get; set; }
-        public string Email { get; set; }
-        public string City { get; set; }
-        public string Address { get; set; }
+        public string? City { get; set; }
+        public string? Address { get; set; }
         public string PhoneNumber { get; set; }
-        public Gender Gender { get; set; }
-        public DateOnly Birthday { get; set; }
-        public string Nationality { get; set; }
+        public string? Gender { get; set; }
+        public DateOnly? Birthday { get; set; }
+        public string? Nationality { get; set; }
         public string Role { get; set; }
-        public string IdNumber { get; set; }
+        public string? IdNumber { get; set; }
     }
 
     public class AddOwnerCommandResultHandler(ApplicationDbContext _dbContext) : IRequestHandler<AddOwnerCommand, AddOwnerCommandResult>
@@ -39,13 +32,11 @@ namespace Application.Owner.Commends.Add
             {
                 var _owner = new Domain.Models.Owners.Owner
                 {
-                    Email = request.createOnwerDto.Email,
                     City = request.createOnwerDto.City,
                     Address = request.createOnwerDto.Address,
                     PhoneNumber = request.createOnwerDto.PhoneNumber,
                     Nationality = request.createOnwerDto.Nationality,
                     Role = request.createOnwerDto.Role,
-                    IdNumber = request.createOnwerDto.IdNumber,
                     Name = request.createOnwerDto.Name,
                     Birthday = request.createOnwerDto.Birthday,
                     Gender = request.createOnwerDto.Gender

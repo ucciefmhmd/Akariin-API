@@ -1,21 +1,18 @@
-﻿using Application.Utilities.Models;
-using Domain.Models.RealEstates;
+﻿using Application.Utilities.Extensions;
+using Application.Utilities.Filter;
+using Application.Utilities.Models;
+using Application.Utilities.Sort;
 using Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.RealEstate.Queries.GetAllRealEstate
 {
-    public record GetAllRealEstateQuery : IRequest<GetAllRealEstateQueryResult>;
+    public record GetAllRealEstateQuery : BasePaginatedQuery, IRequest<GetAllRealEstateQueryResult>;
 
     public record GetAllRealEstateQueryResult : BaseCommandResult
     {
-        public List<RealEstateDto> RealEstateDto { get; set; }
+        public BasePaginatedList<RealEstateDto> RealEstateDto { get; set; }
     }
 
     public record RealEstateDto
@@ -36,16 +33,19 @@ namespace Application.RealEstate.Queries.GetAllRealEstate
             {
                 var realEstates = await _dbContext.RealEstates
                     .Include(re => re.Owner)
+                    .Search(request.SearchTerm)
                     .Select(re => new RealEstateDto
                     {
                         Id = re.Id,
                         Name = re.Name,
-                        Type = re.Type.ToString(),
-                        Category = re.Category.ToString(),
-                        Service = re.Service.ToString(),
+                        Type = re.Type,
+                        Category = re.Category,
+                        Service = re.Service,
                         OwnerId = re.Owner.Id
                     })
-                    .ToListAsync(cancellationToken);
+                    .Filter(request.Filters)
+                    .Sort(request.Sorts ?? new List<SortedQuery>() { new SortedQuery() { PropertyName = "Name", Direction = SortDirection.ASC } })
+                    .ToPaginatedListAsync(request.PageNumber, request.PageSize);
 
                 return new GetAllRealEstateQueryResult
                 {
@@ -64,5 +64,4 @@ namespace Application.RealEstate.Queries.GetAllRealEstate
             }
         }
     }
-
 }

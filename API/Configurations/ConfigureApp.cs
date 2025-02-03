@@ -17,11 +17,12 @@ namespace Configurations
                     initialiser.InitialiseAsync().Wait();
                 }
             }
-//#if DEBUG || LOCAL || LIVESTAGE
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/RealEstate/swagger.json", "Real Estate API v1");
+                c.SwaggerEndpoint("/swagger/Common/swagger.json", "Common API v1");
                 c.SwaggerEndpoint("/swagger/Owner/swagger.json", "Owner API v1");
                 c.SwaggerEndpoint("/swagger/Contract/swagger.json", "Contract API v1");
                 c.SwaggerEndpoint("/swagger/Bill/swagger.json", "Bill API v1");
@@ -34,7 +35,7 @@ namespace Configurations
                 c.DisplayRequestDuration();
                 c.EnableFilter();
             });
-            //#endif
+
             //app.UseCors("AllowSpecificOrigin");
             //app.UseCors("AllowOrigin");
             app.UseCors("AllowServerOrigin");

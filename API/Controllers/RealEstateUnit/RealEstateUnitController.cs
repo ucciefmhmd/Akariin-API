@@ -7,16 +7,17 @@ using Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace API.Controllers.RealEstateUnit
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiExplorerSettings(GroupName = "RealEstateUnit")]
     public class RealEstateUnitController(IMediator _mediator) : ControllerBase
     {
         [HttpGet("GetAllRealEstateUnit")]
-        public async Task<ActionResult<GetAllRealEstateUnitQueryResult>> GetAll()
+        public async Task<ActionResult<GetAllRealEstateUnitQueryResult>> GetAll([FromBody] GetAllRealEstateUnitQuery query)
         {
-            return await this.HandleCommandResult(_mediator.Send(new GetAllRealEstateUnitQuery()));
+            return await this.HandleCommandResult(_mediator.Send(query));
         }
 
         [HttpGet("{id:long}")]

@@ -7,17 +7,18 @@ using Application.RealEstate.Queries.GetAllRealEstate;
 using Application.RealEstate.Queries.GetByIdRealEstate;
 using Common;
 
-namespace API.Controllers
+namespace API.Controllers.RealEstate
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiExplorerSettings(GroupName = "RealEstate")]
     public class RealEstateController(IMediator _mediator) : ControllerBase
     {
 
         [HttpGet("GetAllRealEstate")]
-        public async Task<ActionResult<GetAllRealEstateQueryResult>> GetAll()
+        public async Task<ActionResult<GetAllRealEstateQueryResult>> GetAll([FromBody] GetAllRealEstateQuery query)
         {
-            return await this.HandleCommandResult(_mediator.Send(new GetAllRealEstateQuery()));
+            return await this.HandleCommandResult(_mediator.Send(query));
         }
 
         [HttpGet("{id:long}")]

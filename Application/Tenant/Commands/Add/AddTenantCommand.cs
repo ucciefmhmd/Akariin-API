@@ -1,7 +1,6 @@
 ﻿using Application.Utilities.Models;
 using Infrastructure;
 using MediatR;
-using static Domain.Common.Enums.OwnerEnum;
 
 namespace Application.Tenant.Commands.Add
 {
@@ -11,7 +10,7 @@ namespace Application.Tenant.Commands.Add
     {
         public long Id { get; set; }
     }
-    public record CreateTenantDto(string Name, string Email, string PhoneNumber, string Address, string City, Gender Gender, DateOnly Birthday, string Nationality, string IdNumber);
+    public record CreateTenantDto(string Name, string Email, string PhoneNumber, string Address, string City, string Gender, DateOnly Birthday, string Nationality, string IdNumber);
 
     public class AddTenanrCommandHandler(ApplicationDbContext _dbContext) : IRequestHandler<AddTenantCommand, AddTenantCommandResult>
     {

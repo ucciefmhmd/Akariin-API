@@ -7,16 +7,17 @@ using Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace API.Controllers.Owner
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiExplorerSettings(GroupName = "Owner")]
     public class OwnerController(IMediator _mediator) : ControllerBase
     {
         [HttpGet("GetAllOwners")]
-        public async Task<ActionResult<GetAllOwnersQueryResult>> GetAll()
+        public async Task<ActionResult<GetAllOwnersQueryResult>> GetAll([FromBody] GetAllOwnersQuery query)
         {
-            return await this.HandleCommandResult(_mediator.Send(new GetAllOwnersQuery()));
+            return await this.HandleCommandResult(_mediator.Send(query));
         }
 
         [HttpGet("{id:long}")]

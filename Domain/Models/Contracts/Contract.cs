@@ -2,7 +2,6 @@
 using Domain.Models.RealEstateUnits;
 using Domain.Models.Tenants;
 using System.ComponentModel.DataAnnotations.Schema;
-using static Domain.Common.Enums.ContractEnum;
 
 namespace Domain.Models.Contracts
 {
@@ -13,8 +12,8 @@ namespace Domain.Models.Contracts
         public DateOnly DateOfConclusion { get; set; }
         public TimeOnly Duration { get; set; }
         public long Number { get; set; }
-        public ContractType Type { get; set; }
-        public TerminationMethod TerminationMethod { get; set; }
+        public string Type { get; set; }
+        public string TerminationMethod { get; set; }
 
         // Foreign Keys
         [ForeignKey(nameof(RealEstateUnit))]

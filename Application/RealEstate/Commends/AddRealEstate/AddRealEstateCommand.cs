@@ -1,8 +1,6 @@
 ﻿using Application.Utilities.Models;
 using Infrastructure;
 using MediatR;
-using static Domain.Common.Enums.RealEstateEnum;
-
 namespace Application.RealEstate.Commends.AddRealEstate
 {
     public record AddRealEstateCommand(string Name, string Type, string Category, string Service, long OwnerId) : IRequest<AddRealEstateCommandResult>;
@@ -17,24 +15,12 @@ namespace Application.RealEstate.Commends.AddRealEstate
         {
             try
             {
-                if (!Enum.TryParse<RealEstateType>(request.Type, out var realEstateType) ||
-                    !Enum.TryParse<RealEstateCategory>(request.Category, out var realEstateCategory) ||
-                    !Enum.TryParse<RealEstateService>(request.Service, out var realEstateService))
-                {
-                    return new AddRealEstateCommandResult
-                    {
-                        IsSuccess = false,
-                        Errors = { "Invalid enum value provided for Type, Category, or Service." },
-                        ErrorCode = Domain.Common.ErrorCode.InvalidDate
-                    };
-                }
-
                 var realEstate = new Domain.Models.RealEstates.RealEstate
                 {
                     Name = request.Name,
-                    Type = realEstateType,
-                    Category = realEstateCategory,
-                    Service = realEstateService,
+                    Type = request.Type,
+                    Category = request.Category,
+                    Service = request.Service,
                     OwnerId = request.OwnerId
                 };
 

@@ -1,16 +1,18 @@
-﻿using Application.Utilities.Models;
+﻿using Application.Utilities.Extensions;
+using Application.Utilities.Filter;
+using Application.Utilities.Models;
+using Application.Utilities.Sort;
 using Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using static Domain.Common.Enums.ContractEnum;
 
 namespace Application.Contract.Queries.GetAll
 {
-    public record GetAllContractQuery : IRequest<GetAllContractQueryResult>;
+    public record GetAllContractQuery : BasePaginatedQuery, IRequest<GetAllContractQueryResult>;
 
     public record GetAllContractQueryResult : BaseCommandResult
     {
-        public List<ContractDto> dto { get; init; }
+        public BasePaginatedList<ContractDto> dto { get; init; }
     }
 
     public record ContractDto
@@ -21,8 +23,8 @@ namespace Application.Contract.Queries.GetAll
         public DateOnly DateOfConclusion { get; set; }
         public TimeOnly Duration { get; set; }
         public long Number { get; set; }
-        public ContractType Type { get; set; }
-        public TerminationMethod TerminationMethod { get; set; }
+        public string Type { get; set; }
+        public string TerminationMethod { get; set; }
         public long RealEstateUnitId { get; set; }
         public long TenantId { get; set; }
     }
@@ -36,6 +38,7 @@ namespace Application.Contract.Queries.GetAll
                 var contracts = await _dbContext.Contracts
                                         .Include(c => c.RealEstateUnit)
                                         .Include(c => c.Tenant)
+                                        .Search(request.SearchTerm)
                                         .Select(c => new ContractDto
                                         {
                                             Id = c.Id,
@@ -48,7 +51,10 @@ namespace Application.Contract.Queries.GetAll
                                             TerminationMethod = c.TerminationMethod,
                                             RealEstateUnitId = c.RealEstateUnitId,
                                             TenantId = c.TenantId
-                                        }).ToListAsync(cancellationToken);
+                                        })
+                                        .Filter(request.Filters)
+                                        .Sort(request.Sorts ?? new List<SortedQuery>() { new SortedQuery() { PropertyName = "Number", Direction = SortDirection.ASC } })
+                                        .ToPaginatedListAsync(request.PageNumber, request.PageSize);
 
                 return new GetAllContractQueryResult
                 {

@@ -38,7 +38,7 @@ namespace Application.Services.UserService
             }
             return user.SecurityStamp;
         }
-        public async Task<BaseCommandResult> AssignUserToRolesAsync(string userId, List<string> Roles)
+        public async Task<BaseCommandResult> AssignUserToRolesAsync(string userId, string RoleName)
         {
             try
             {
@@ -47,23 +47,25 @@ namespace Application.Services.UserService
                 {
                     return new BaseCommandResult() { ErrorCode = Domain.Common.ErrorCode.NotFound, Errors = { "User not found." }, IsSuccess = false };
                 }
+                
                 _dbContext.UserRoles.RemoveRange(_dbContext.UserRoles.Where(u => u.UserId == userId));
-                if (Roles != null && Roles.Any())
+                
+                if (RoleName != null)
                 {
-                    foreach (var roleName in Roles)
+                    var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == RoleName);
+                        
+                    if (role == null)
                     {
-                        var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
-                        if (role == null)
-                        {
-                            return new BaseCommandResult() { ErrorCode = Domain.Common.ErrorCode.NotFound, Errors = { $"role {role} not found." }, IsSuccess = false };
-                        }
-                        var userroles = new IdentityUserRole<string>
-                        {
-                            UserId = userId,
-                            RoleId = role.Id
-                        };
-                        await _dbContext.UserRoles.AddAsync(userroles);
+                        return new BaseCommandResult() { ErrorCode = Domain.Common.ErrorCode.NotFound, Errors = { $"role {role} not found." }, IsSuccess = false };
                     }
+
+                    var userroles = new IdentityUserRole<string>
+                    {
+                        UserId = userId,
+                        RoleId = role.Id
+                    };
+                    await _dbContext.UserRoles.AddAsync(userroles);
+                  
                 }
                 await _userManager.UpdateSecurityStampAsync(user);
                 await _dbContext.SaveChangesAsync();
@@ -71,20 +73,18 @@ namespace Application.Services.UserService
             }
             catch(Exception ex)
             {
-                return new BaseCommandResult() { ErrorCode = Domain.Common.ErrorCode.NotFound, IsSuccess = false,
-#if DEBUG
-                    Errors = { ex.Message }
-#endif
-                };
+                return new BaseCommandResult() { ErrorCode = Domain.Common.ErrorCode.NotFound, IsSuccess = false, Errors = { ex.Message }};
             }
         }
         public async Task<string> GenerateResetCodeAsync(string userId)
         {
             Random random = new Random();
+
             int resetCode = random.Next(100000, 1000000);
 
             // Store the code in MemoryCache
             string cacheKey = $"ResetCode_{userId}";
+
             var cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(15));
 
             _memoryCache.Set(cacheKey, resetCode.ToString(), cacheEntryOptions);

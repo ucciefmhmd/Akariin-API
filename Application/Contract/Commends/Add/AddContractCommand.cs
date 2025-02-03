@@ -1,7 +1,6 @@
 ﻿using Application.Utilities.Models;
 using Infrastructure;
 using MediatR;
-using static Domain.Common.Enums.ContractEnum;
 
 namespace Application.Contract.Commends.Add
 {
@@ -19,8 +18,8 @@ namespace Application.Contract.Commends.Add
         public DateOnly DateOfConclusion { get; set; }
         public TimeOnly Duration { get; set; }
         public long Number { get; set; }
-        public ContractType Type { get; set; }
-        public TerminationMethod TerminationMethod { get; set; }
+        public string Type { get; set; }
+        public string TerminationMethod { get; set; }
         public long RealEstateUnitId { get; set; }
         public long TenantId { get; set; }
     }

@@ -2,13 +2,7 @@
 using Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Domain.Common.Enums.OwnerEnum;
 
 namespace Application.Owner.Commends.Update
 {
@@ -27,7 +21,7 @@ namespace Application.Owner.Commends.Update
         public string City { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
-        public Gender Gender { get; set; }
+        public string Gender { get; set; }
         public DateOnly Birthday { get; set; }
         public string Nationality { get; set; }
         public string Role { get; set; }
@@ -51,13 +45,11 @@ namespace Application.Owner.Commends.Update
                     };
                 }
 
-                owner.Email = request.UpdateOwnerDto.Email;
                 owner.City = request.UpdateOwnerDto.City;
                 owner.Address = request.UpdateOwnerDto.Address;
                 owner.PhoneNumber = request.UpdateOwnerDto.PhoneNumber;
                 owner.Nationality = request.UpdateOwnerDto.Nationality;
                 owner.Role = request.UpdateOwnerDto.Role;
-                owner.IdNumber = request.UpdateOwnerDto.IdNumber;
                 owner.Name = request.UpdateOwnerDto.Name;
                 owner.Birthday = request.UpdateOwnerDto.Birthday;
                 owner.Gender = request.UpdateOwnerDto.Gender;

@@ -2,8 +2,6 @@
 using Infrastructure;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
-using static Domain.Common.Enums.RealEstateEnum;
-
 namespace Application.RealEstate.Commends.UpdateRealEstate
 {
     public record UpdateRealEstateCommand(long Id, string Name, string Type, string Category, string Service, long OwnerId) : IRequest<UpdateRealEstateCommandResult>;
@@ -32,9 +30,9 @@ namespace Application.RealEstate.Commends.UpdateRealEstate
                 }
 
                 realEstate.Name = request.Name;
-                realEstate.Type = Enum.Parse<RealEstateType>(request.Type);
-                realEstate.Category = Enum.Parse<RealEstateCategory>(request.Category);
-                realEstate.Service = Enum.Parse<RealEstateService>(request.Service);
+                realEstate.Type = request.Type;
+                realEstate.Category = request.Category;
+                realEstate.Service = request.Service;
                 realEstate.OwnerId = request.OwnerId;
 
                 var validationResults = new List<ValidationResult>();

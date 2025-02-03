@@ -89,7 +89,6 @@ public partial class ApplicationDbContextInitialiser
     {
         try
         {
-#if DEBUG || LOCAL || LIVESTAGING
             // Default roles
             foreach (var role in Roles.GetAllRoles())
             {
@@ -98,7 +97,6 @@ public partial class ApplicationDbContextInitialiser
                     await _roleManager.CreateAsync(new IdentityRole(role));
                 }
             }
-#endif
         }
         catch (Exception ex)
         {
@@ -112,9 +110,6 @@ public partial class ApplicationDbContextInitialiser
 
         try
         {
-#if DEBUG || LOCAL || LIVESTAGING
-            
-
             if (_userManager.Users.All(u => u.UserName != administrator.UserName))
             {
                 await _userManager.CreateAsync(administrator, "123456");
@@ -126,9 +121,7 @@ public partial class ApplicationDbContextInitialiser
           
             var roles = Roles.GetAllRoles();
             var result = await _userManager.AddToRolesAsync(administrator, roles);
-            // Default data
-            // Seed, if necessary
-#endif
+            
         }
         catch (Exception ex)
         {

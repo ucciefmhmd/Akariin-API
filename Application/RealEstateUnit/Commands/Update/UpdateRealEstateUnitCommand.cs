@@ -1,9 +1,6 @@
-﻿using Application.RealEstate.Commends.UpdateRealEstate;
-using Application.RealEstateUnit.Queries.GetAll;
+﻿using Application.RealEstateUnit.Queries.GetAll;
 using Application.Utilities.Models;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using static Domain.Common.Enums.RealEstateEnum;
 using System.ComponentModel.DataAnnotations;
 using Infrastructure;
 

@@ -7,33 +7,34 @@ using Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace API.Controllers.Bill
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiExplorerSettings(GroupName = "Bill")]
     public class BillController(IMediator _mediator) : ControllerBase
     {
-        [HttpGet("GetAllBill")]
-        public async Task<ActionResult<GetAllBillQueryResult>> GetAll()
+        [HttpGet("GetAll")]
+        public async Task<ActionResult<GetAllBillQueryResult>> GetAll([FromBody] GetAllBillQuery query)
         {
-            return await this.HandleCommandResult(_mediator.Send(new GetAllBillQuery()));
+            return await this.HandleCommandResult(_mediator.Send(query));
         }
-        [HttpGet("{id:long}")]
+        [HttpGet("GetById/{id:long}")]
         public async Task<ActionResult<GetBillByIdQueryResult>> GetById(long id)
         {
             return await this.HandleCommandResult(_mediator.Send(new GetBillByIdQuery(id)));
         }
-        [HttpPost("AddBill")]
+        [HttpPost("Add")]
         public async Task<ActionResult<AddBillCommandResult>> Add([FromBody] AddBillCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }
-        [HttpPut("UpdateBill")]
+        [HttpPut("Update")]
         public async Task<ActionResult<UpdateBillCommandResult>> Update([FromBody] UpdateBillCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }
-        [HttpDelete("{id:long}")]
+        [HttpDelete("Delete/{id:long}")]
         public async Task<ActionResult<DeleteBillCommandResult>> Delete(long id)
         {
             return await this.HandleCommandResult(_mediator.Send(new DeleteBillCommand(id)));
