@@ -18,7 +18,7 @@ namespace Application.Common.User.Queries.GetUser
 
     public record GetUserQueryResult : BaseCommandResult
     {
-        public UserDto dto { get; set; }
+        public UserDto User { get; set; }
 
     }
 
@@ -73,7 +73,7 @@ namespace Application.Common.User.Queries.GetUser
                     {
                         ErrorCode = Domain.Common.ErrorCode.UserNotFound,
                         IsSuccess = false,
-                        dto = null
+                        User = null
                     };
                 }
 
@@ -103,7 +103,7 @@ namespace Application.Common.User.Queries.GetUser
                 {
 
                     IsSuccess = true,
-                    dto = userDto
+                    User = userDto
                 };
 
             }
