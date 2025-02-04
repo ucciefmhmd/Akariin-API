@@ -11,20 +11,35 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Application.Utilities.Models;
 using Application.Services.File;
 using Domain.Common.Constants;
+using System.Data;
 
 namespace Application.Common.User.Queries.GetUser
 {
 
     public record GetUserQueryResult : BaseCommandResult
     {
-        public ApplicationUser User { get; set; }
+        public UserDto dto { get; set; }
 
     }
-   
+
+
+
     public record GetUserQuery : IRequest<GetUserQueryResult>
     {
         [Required]
         public string? Id { get; set; }
+    }
+
+    public record UserDto
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string Email { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Image { get; set; }
+        public string Role { get; set; }
     }
     public sealed class GetUserHandler : IRequestHandler<GetUserQuery, GetUserQueryResult>
     {
@@ -58,12 +73,28 @@ namespace Application.Common.User.Queries.GetUser
                     {
                         ErrorCode = Domain.Common.ErrorCode.UserNotFound,
                         IsSuccess = false,
-                        User = null
+                        dto = null
                     };
                 }
-                user.Roles = await _userManager.GetRolesAsync(user);
+
+                //user.Roles = await _userManager.GetRolesAsync(user);
+
+                var userDto = new UserDto
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    Image = user.Image,
+                    Role = user.Role
+                };
+
                 var url = "";
+
                 var profile = await _attachmentService.GetFilesUrlAsync(Path.Combine("profiles", user.Id));
+
                 if (profile.IsSuccess)
                 {
                     user.Image = profile.Urls.Count > 0 ? profile.Urls[0] : "";
@@ -72,7 +103,7 @@ namespace Application.Common.User.Queries.GetUser
                 {
 
                     IsSuccess = true,
-                    User = user
+                    dto = userDto
                 };
 
             }

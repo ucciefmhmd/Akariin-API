@@ -28,11 +28,14 @@ namespace Application.Common.User.Commands.ConfirmEmail
         public async Task<ConfirmEmailCommandResult> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
+            
             if (user == null) {
                 return new ConfirmEmailCommandResult() { IsSuccess = false, ErrorCode = ErrorCode.UserNotFound }; 
             }
+
             else {
                 var isTokenValid = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, "EmailConfirmation", request.Code);
+                
                 if (!isTokenValid)
                 {
                     return new ConfirmEmailCommandResult
@@ -41,11 +44,14 @@ namespace Application.Common.User.Commands.ConfirmEmail
                         IsSuccess = false
                     };
                 }
+
                 var result = await _userManager.ConfirmEmailAsync(user, request.Code);
+                
                 if (result == IdentityResult.Success)
                 {
                     return new ConfirmEmailCommandResult() { IsSuccess = true };
                 }
+
                 return new ConfirmEmailCommandResult() { IsSuccess = false, ErrorCode = ErrorCode.Error };
             }
 

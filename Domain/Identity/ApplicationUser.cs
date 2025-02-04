@@ -41,7 +41,7 @@ public class ApplicationUser : IdentityUser
     public string? Affiliations { get; set; }
 
     [NotMapped]
-    public IList<string> Roles { get; set; }
+    public string Role { get; set; }
     public string? ZIP { get; set; }
     // userPro
     public string? AddressLine1 { get; set; }
