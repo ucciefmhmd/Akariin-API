@@ -5,14 +5,9 @@ using Microsoft.Extensions.Logging;
 using Application.Utilities.Models;
 using Domain.Common;
 using Domain.Identity;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Common.User.Commands.UserLock
 {
@@ -55,6 +50,7 @@ namespace Application.Common.User.Commands.UserLock
                 }
 
                 var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Jti);
+                
                 if (userId == request.Id)
                 {
                     return new UserLockCommandResult
@@ -65,7 +61,9 @@ namespace Application.Common.User.Commands.UserLock
                 }
 
                 user.LockoutEnd = request.Date ?? DateTime.Now.AddYears(10);
+
                 user.ModifiedDate = DateTime.UtcNow;
+
                 var result = await _userManager.UpdateAsync(user);
 
                 if (!result.Succeeded)
