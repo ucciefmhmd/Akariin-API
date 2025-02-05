@@ -78,9 +78,9 @@ namespace Common.Controllers.Account
         /// </summary>
         /// <param name="userCommand"></param>
         /// <returns>User after taking updates</returns>
-        [HttpPatch("UpdateUser")]
-        [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN},{Roles.USER}")]
-        public async Task<ActionResult<UpdateUserCommandResult>> UpdateUser([FromBody] UpdateUserCommand userCommand)
+        [HttpPut("UpdateUser")]
+        //[Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN},{Roles.USER}")]
+        public async Task<ActionResult<UpdateUserCommandResult>> UpdateUser([FromForm] UpdateUserCommand userCommand)
         {
             return await this.HandleCommandResult(_mediator.Send(userCommand));
         }
@@ -90,7 +90,7 @@ namespace Common.Controllers.Account
         /// </summary>
         /// <param name="userCommand">User Id and [block end date] </param>
         /// <returns></returns>
-        [HttpPatch("LockUser")]
+        [HttpPut("LockUser")]
         [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN}")]
         public async Task<ActionResult<UserLockCommandResult>> LockUser([FromBody] UserLockCommand userCommand)
         {
@@ -102,7 +102,7 @@ namespace Common.Controllers.Account
         /// </summary>
         /// <param name="userCommand">User Id</param>
         /// <returns></returns>
-        [HttpPatch("UnLockUser")]
+        [HttpPut("UnLockUser")]
         [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN}")]
         public async Task<ActionResult<UserUnlockCommandResult>> LockUser([FromBody] UserUnlockCommand userCommand)
         {
@@ -163,13 +163,13 @@ namespace Common.Controllers.Account
         }
         
         
-        [HttpGet("GetNotificationCredentials")]
-        [AllowAnonymous]
-        public async Task<ActionResult> GetNotificationCredentials()
-        {
-           var credentials = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TaskManager-Firebase-Key.json"));
-            return Ok(credentials?.UnderlyingCredential);
-        }
+        //[HttpGet("GetNotificationCredentials")]
+        //[AllowAnonymous]
+        //public async Task<ActionResult> GetNotificationCredentials()
+        //{
+        //   var credentials = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TaskManager-Firebase-Key.json"));
+        //    return Ok(credentials?.UnderlyingCredential);
+        //}
 
     }
 }

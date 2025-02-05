@@ -16,9 +16,9 @@ namespace Application.Services.File
         {
             await _fileService.DeleteFilesAsync(Id);
         }
-        public async Task<UploadFileResult> UploadFilesAsync(string Id, IFormFileCollection files)
+        public async Task<UploadFileResult> UploadFilesAsync(string Id, IFormFile file)
         {
-            return await _fileService.UploadFilesAsync(Id,files);
+            return await _fileService.UploadFilesAsync(Id,file);
         }
         public async Task<GetFilesResult> GetFilesUrlAsync(string Id)
         {

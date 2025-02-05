@@ -75,31 +75,29 @@ namespace Application.Services.File
         }
 
 
-        public async Task<UploadFileResult> UploadFilesAsync(string Id, IFormFileCollection files)
+        public async Task<UploadFileResult> UploadFilesAsync(string Id, IFormFile file)
         {
             try
             {
                 List<UploadFile> results = new List<UploadFile>();
-                foreach (var file in files)
-                {
-                    if (file == null || file.Length == 0)
-                        return new UploadFileResult() { ErrorCode = Domain.Common.ErrorCode.BadFile, Errors = { "Bad file" }, IsSuccess = false };
-                    var filePath = Path.Combine("wwwroot", GetUploadDirectory(Id) +Guid.NewGuid().ToString() + "_" + file.FileName);
 
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await file.CopyToAsync(stream);
-                    }
-                    results.Add(new UploadFile { Url=filePath,FileName= Path.GetFileName(filePath) } );
+                if (file == null || file.Length == 0)
+                    return new UploadFileResult() { ErrorCode = Domain.Common.ErrorCode.BadFile, Errors = { "Bad file" }, IsSuccess = false };
+                var filePath = Path.Combine("wwwroot", GetUploadDirectory(Id) +Guid.NewGuid().ToString() + "_" + file.FileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
                 }
+                results.Add(new UploadFile { Url=filePath,FileName= Path.GetFileName(filePath) } );
+
                 return new UploadFileResult() { IsSuccess = true, UploadFiles = results };
             }
             catch(Exception error)
             {
-                return new UploadFileResult() { ErrorCode = Domain.Common.ErrorCode.Error,
-#if DEBUG
+                return new UploadFileResult() { 
+                    ErrorCode = Domain.Common.ErrorCode.Error,
                     Errors = { error.Message},
-#endif
                     IsSuccess = false };
             }
 

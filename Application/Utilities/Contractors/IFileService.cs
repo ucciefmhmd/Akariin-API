@@ -14,7 +14,7 @@ namespace Application.Utilities.Contractors
 {
     public interface IFileService
     {
-        Task<UploadFileResult> UploadFilesAsync(string Id, IFormFileCollection files);
+        Task<UploadFileResult> UploadFilesAsync(string Id, IFormFile file);
         Task<GetFilesResult> GetFilesUrlAsync(string Id);
         Task DeleteFilesAsync(string Id);
 

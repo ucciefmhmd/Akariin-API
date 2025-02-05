@@ -4,29 +4,20 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Application.Services.UserService;
-using Application.Common.User.Commands.Register;
 using Application.Utilities.Models;
 using Domain.Common;
 using Domain.Common.Attributes;
 using Domain.Identity;
 using Infrastructure;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using Domain.Common.Constants;
 using Application.Services.File;
 
 namespace Application.Common.User.Commands.UpdateUser
 {
-    public record UpdateUserCommandResult : BaseCommandResult
-    {
-
-    }
+    public record UpdateUserCommandResult : BaseCommandResult{}
     public record UpdateUserCommand : IRequest<UpdateUserCommandResult>
     {
         [Required]
@@ -36,15 +27,9 @@ namespace Application.Common.User.Commands.UpdateUser
 
         [Required(ErrorMessage = nameof(ErrorCode.FieldRequired), AllowEmptyStrings = false)]
         public string Name { get; set; }
-
         public string? PhoneNumber { get; set; }
-
-
-        public IFormFileCollection? Images { get; set; }
-
-
+        public IFormFile? Image { get; set; }
         public string? Role { get; set; }
-
         public bool IsActive { get; set; }
     }
 
@@ -158,9 +143,9 @@ namespace Application.Common.User.Commands.UpdateUser
                             };
                         }
                     }
-                    if(request.Images != null)
+                    if(request.Image != null)
                     {
-                        await _attachmentService.UploadFilesAsync(Path.Combine("profiles",request.Id),request.Images);
+                        await _attachmentService.UploadFilesAsync(Path.Combine("profiles",request.Id),request.Image);
                     }
 
                     await trans.CommitAsync(cancellationToken);
