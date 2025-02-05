@@ -24,17 +24,10 @@ namespace Common.Controllers.Account
 {
     [ApiExplorerSettings(GroupName = "Common")]
     [ApiController]
-    [Authorize]
-    public class AccountController : ControllerBase
+    //[Authorize]
+    public class AccountController(IMediator _mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-        private readonly UserManager<ApplicationUser> userManager;
-
-        public AccountController(IMediator mediator, UserManager<ApplicationUser> userManager)
-        {
-            _mediator = mediator;
-            this.userManager = userManager;
-        }
+        
         /// <summary
         /// >
         /// Get All Users
@@ -79,7 +72,7 @@ namespace Common.Controllers.Account
         /// <param name="userCommand"></param>
         /// <returns>User after taking updates</returns>
         [HttpPut("UpdateUser")]
-        //[Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN},{Roles.USER}")]
+        [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN},{Roles.USER}")]
         public async Task<ActionResult<UpdateUserCommandResult>> UpdateUser([FromForm] UpdateUserCommand userCommand)
         {
             return await this.HandleCommandResult(_mediator.Send(userCommand));

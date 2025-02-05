@@ -26,7 +26,8 @@ namespace Application.Common.User.Commands.UpdateUser
         public string? Email { get; set; }
 
         [Required(ErrorMessage = nameof(ErrorCode.FieldRequired), AllowEmptyStrings = false)]
-        public string Name { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public string? PhoneNumber { get; set; }
         public IFormFile? Image { get; set; }
         public string? Role { get; set; }
@@ -59,7 +60,9 @@ namespace Application.Common.User.Commands.UpdateUser
         public async Task<UpdateUserCommandResult> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
             var userId = request.Id ?? _httpContext.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
             var user = await _userManager.FindByIdAsync(userId);
+
             if (user == null)
             {
                 return new UpdateUserCommandResult()
@@ -107,13 +110,13 @@ namespace Application.Common.User.Commands.UpdateUser
                     }
                     
                     user.PhoneNumber = request.PhoneNumber;
-
-
-                    //if(!isSystemAdmin) user.Name = request.Name;
-                    
+                    user.FirstName = request.FirstName;
+                    user.LastName = request.LastName;
                     user.ModifiedDate = DateTime.UtcNow;
                     user.IsActive = request.IsActive;
+                    
                     var result = await _userManager.UpdateAsync(user);
+                    
                     if (!result.Succeeded)
                     {
                         await trans.RollbackAsync(cancellationToken);

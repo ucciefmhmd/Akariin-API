@@ -64,8 +64,7 @@ namespace Application.Common.User.Queries.GetUser
             {
                 var userId = request.Id ?? _httpContext.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Jti);
 
-                var user = await _dbContext.Users
-                    .FirstOrDefaultAsync(u => u.Id == userId);
+                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
                 if (user == null)
                 {
@@ -77,7 +76,7 @@ namespace Application.Common.User.Queries.GetUser
                     };
                 }
 
-                //user.Roles = await _userManager.GetRolesAsync(user);
+                var roles = await _userManager.GetRolesAsync(user);
 
                 var userDto = new UserDto
                 {
@@ -88,7 +87,7 @@ namespace Application.Common.User.Queries.GetUser
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
                     Image = user.Image,
-                    Role = user.Role
+                    Role = roles.FirstOrDefault()
                 };
 
                 var url = "";
