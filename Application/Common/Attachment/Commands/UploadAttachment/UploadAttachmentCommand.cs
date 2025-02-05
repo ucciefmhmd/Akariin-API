@@ -16,7 +16,7 @@ namespace Application.Common.Attachment.Commands.UploadAttachment
     {
         [NonEmptyGuid(ErrorMessage = nameof(ErrorCode.FieldRequired))]
         public Guid Id { get; set; }
-        public IFormFileCollection Files { get; internal set; } = new FormFileCollection();
+        public IFormFile File { get; internal set; }
     }
 
     public class UploadAttachmentCommandHandler : IRequestHandler<UploadAttachmentCommand, UploadAttachmentCommandResult>
@@ -34,7 +34,7 @@ namespace Application.Common.Attachment.Commands.UploadAttachment
         {
             try
             {
-                var result=await attachmentService.UploadFilesAsync(request.Id.ToString(), request.Files);
+                var result=await attachmentService.UploadFilesAsync(request.Id.ToString(), request.File);
                 if (!result.IsSuccess)
                 {
                     return new UploadAttachmentCommandResult()
