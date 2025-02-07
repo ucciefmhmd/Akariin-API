@@ -107,6 +107,11 @@ namespace Application.Common.User.Commands.Login
                 new Claim("uss",user.SecurityStamp)
             }.Union(userClaims).Union(roleClaims);
 
+            foreach (var claim in claims)
+            {
+                Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+            }
+
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
 
             var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
@@ -114,7 +119,7 @@ namespace Application.Common.User.Commands.Login
             var jwtSecurityToken = new JwtSecurityToken(issuer: _configuration["JWT:Issuer"],
                                                         audience: _configuration["JWT:Audience"],
                                                         claims: claims,
-                                                        expires: DateTime.Now.AddDays(double.Parse(_configuration["JWT:DurationInDays"])),
+                                                        expires: DateTime.UtcNow.AddDays(double.Parse(_configuration["JWT:DurationInDays"])),
                                                         signingCredentials: signingCredentials);
 
             return jwtSecurityToken;

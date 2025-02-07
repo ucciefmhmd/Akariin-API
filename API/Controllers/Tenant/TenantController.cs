@@ -16,7 +16,7 @@ namespace API.Controllers.Tenant
     [ApiVersion("1.0")]
     public class TenantController(IMediator _mediator) : ControllerBase
     {
-        [HttpGet("GetAllTenant")]
+        [HttpPost("GetAllTenant")]
         public async Task<ActionResult<GetAllTenantQueryResult>> GetAll([FromBody] GetAllTenantQuery query)
         {
             return await this.HandleCommandResult(_mediator.Send(query));

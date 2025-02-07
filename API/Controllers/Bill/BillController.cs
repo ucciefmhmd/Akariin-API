@@ -14,7 +14,7 @@ namespace API.Controllers.Bill
     [ApiExplorerSettings(GroupName = "Bill")]
     public class BillController(IMediator _mediator) : ControllerBase
     {
-        [HttpGet("GetAll")]
+        [HttpPost("GetAll")]
         public async Task<ActionResult<GetAllBillQueryResult>> GetAll([FromBody] GetAllBillQuery query)
         {
             return await this.HandleCommandResult(_mediator.Send(query));

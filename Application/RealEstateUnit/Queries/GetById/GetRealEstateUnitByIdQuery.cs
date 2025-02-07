@@ -1,8 +1,11 @@
 ﻿using Application.RealEstate.Queries.GetAllRealEstate;
 using Application.RealEstateUnit.Queries.GetAll;
+using Application.Services.File;
 using Application.Utilities.Models;
+using Domain.Models.RealEstates;
 using Infrastructure;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.RealEstateUnit.Queries.GetById
@@ -11,9 +14,26 @@ namespace Application.RealEstateUnit.Queries.GetById
 
     public record GetRealEstateUnitByIdQueryResult : BaseCommandResult
     {
-        public RealEstateUnitDto dto { get; set; }
+        public RealEstateUnitDataDto dto { get; set; }
     }
-    public class GetRealEstateUnitByIdQueryHandler(ApplicationDbContext _dbContext) : IRequestHandler<GetRealEstateUnitByIdQuery, GetRealEstateUnitByIdQueryResult>
+    public record RealEstateUnitDataDto
+    {
+        public long Id { get; set; }
+        public string AnnualRent { get; set; }
+        public string Area { get; set; }
+        public string Floor { get; set; }
+        public string UnitNumber { get; set; }
+        public string NumOfRooms { get; set; }
+        public string Type { get; set; }
+        public string? GasMeter { get; set; }
+        public string? WaterMeter { get; set; }
+        public string? ElectricityCalculation { get; set; }
+        public string? Image { get; set; }
+        public long TenantId { get; set; }
+        public long RealEstateId { get; set; }
+
+    }
+    public class GetRealEstateUnitByIdQueryHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService) : IRequestHandler<GetRealEstateUnitByIdQuery, GetRealEstateUnitByIdQueryResult>
     {
         public async Task<GetRealEstateUnitByIdQueryResult> Handle(GetRealEstateUnitByIdQuery request, CancellationToken cancellationToken)
         {
@@ -22,7 +42,7 @@ namespace Application.RealEstateUnit.Queries.GetById
                 var realEstateUnit = await _dbContext.RealEstateUnits
                     .Include(re => re.Tenant)
                     .Where(re => re.Id == request.Id)
-                    .Select(re => new RealEstateUnitDto
+                    .Select(re => new RealEstateUnitDataDto
                     {
                         Id = re.Id,
                         AnnualRent = re.AnnualRent,
@@ -31,7 +51,11 @@ namespace Application.RealEstateUnit.Queries.GetById
                         UnitNumber = re.UnitNumber,
                         NumOfRooms = re.NumOfRooms,
                         Type = re.Type,
-                        TenantId = re.TenantId
+                        ElectricityCalculation = re.ElectricityCalculation,
+                        GasMeter = re.GasMeter,
+                        WaterMeter = re.WaterMeter,
+                        TenantId = re.TenantId,
+                        RealEstateId = re.RealEstateId
                     })
                     .FirstOrDefaultAsync(cancellationToken);
 
@@ -42,6 +66,14 @@ namespace Application.RealEstateUnit.Queries.GetById
                         IsSuccess = false,
                         Errors = { "Real estate unit not found." }
                     };
+                }
+
+                var url = "";
+                var profile = await _attachmentService.GetFilesUrlAsync(Path.Combine("profiles", realEstateUnit.Id.ToString()));
+
+                if (profile.IsSuccess && profile.Urls.Count > 0)
+                {
+                    realEstateUnit.Image = profile.Urls[0];
                 }
 
                 return new GetRealEstateUnitByIdQueryResult

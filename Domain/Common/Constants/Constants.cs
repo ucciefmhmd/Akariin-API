@@ -31,7 +31,7 @@ namespace Domain.Common.Constants
 
     public static class Policies
     {
-        public const string SUPER_ADMIN_POLICY = "Super_ADMIN_POLICY";
+        public const string ADMIN_SUB_ADMIN_POLICY = "Admin_Sub_ADMIN_POLICY";
         public const string ADMIN_POLICY = "Admin_Policy";
         public const string USER_POLICY = "User_Policy";
     }

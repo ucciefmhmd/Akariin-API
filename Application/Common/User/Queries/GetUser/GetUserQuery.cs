@@ -98,6 +98,7 @@ namespace Application.Common.User.Queries.GetUser
                 {
                     user.Image = profile.Urls.Count > 0 ? profile.Urls[0] : "";
                 }
+
                 return new GetUserQueryResult
                 {
 

@@ -14,7 +14,7 @@ namespace API.Controllers.Owner
     [ApiExplorerSettings(GroupName = "Owner")]
     public class OwnerController(IMediator _mediator) : ControllerBase
     {
-        [HttpGet("GetAllOwners")]
+        [HttpPost("GetAllOwners")]
         public async Task<ActionResult<GetAllOwnersQueryResult>> GetAll([FromBody] GetAllOwnersQuery query)
         {
             return await this.HandleCommandResult(_mediator.Send(query));

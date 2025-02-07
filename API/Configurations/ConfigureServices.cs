@@ -29,6 +29,22 @@ public static class ConfigureServices
 
         services.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
+        //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        //           .AddJwtBearer(options =>
+        //           {
+        //               options.TokenValidationParameters = new TokenValidationParameters
+        //               {
+        //                   ValidateIssuer = true,
+        //                   ValidateAudience = true,
+        //                   ValidateLifetime = true,
+        //                   ValidateIssuerSigningKey = true,
+        //                   ValidIssuer = configuration["Jwt:Issuer"],
+        //                   ValidAudience = configuration["Jwt:Audience"],
+        //                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+        //               };
+        //           });
+
+
         //~ Add authorization configurations from a custom method
         services.AddAuthorizationConfiguration();
 
@@ -40,6 +56,7 @@ public static class ConfigureServices
 
         //~ Add singleton services for IActionContextAccessor and IUrlHelperFactory
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+        
         services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
 
         //~ Add application services from a custom method
@@ -182,14 +199,7 @@ public static class ConfigureServices
                             Id = "Bearer"
                         }
                     },
-                    //#if DEBUG || LOCAL
-                    new List<string>()
-                    {
-                        ""
-                    }
-                    //#else
-                    //new string[] {}
-                    //#endif
+                    new string[] {}
                 }
             });
         });

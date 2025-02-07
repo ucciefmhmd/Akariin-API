@@ -9,11 +9,8 @@ using Application.Common.User.Commands.UserUnlock;
 using Application.Common.User.Queries.GetUser;
 using Application.Common.User.Queries.GetUsers;
 using Domain.Common.Constants;
-using Domain.Identity;
-using Google.Apis.Auth.OAuth2;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -35,7 +32,7 @@ namespace Common.Controllers.Account
         /// <param name="query"></param>
         /// <returns>All Users</returns>
         [HttpPost("GetAllUsers")]
-        [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN}")]
+        //[Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN}")]
         public async Task<ActionResult<GetUsersQueryResult>> Get([FromBody] GetUsersQuery query)
         {
             return await this.HandleCommandResult(_mediator.Send(query));
@@ -48,7 +45,7 @@ namespace Common.Controllers.Account
         /// <param name="query">Id for user</param>
         /// <returns>User</returns>
         [HttpGet("GetUser")]
-        [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN},{Roles.USER}")]
+        //[Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN},{Roles.USER}")]
         public async Task<ActionResult<GetUserQueryResult>> Get([FromQuery] GetUserQuery query)
         {
             return await this.HandleCommandResult(_mediator.Send(query));
@@ -72,7 +69,7 @@ namespace Common.Controllers.Account
         /// <param name="userCommand"></param>
         /// <returns>User after taking updates</returns>
         [HttpPut("UpdateUser")]
-        [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN},{Roles.USER}")]
+        //[Authorize(Policy = "USER_POLICY")]
         public async Task<ActionResult<UpdateUserCommandResult>> UpdateUser([FromForm] UpdateUserCommand userCommand)
         {
             return await this.HandleCommandResult(_mediator.Send(userCommand));
@@ -84,7 +81,7 @@ namespace Common.Controllers.Account
         /// <param name="userCommand">User Id and [block end date] </param>
         /// <returns></returns>
         [HttpPut("LockUser")]
-        [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN}")]
+        //[Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN}")]
         public async Task<ActionResult<UserLockCommandResult>> LockUser([FromBody] UserLockCommand userCommand)
         {
             return await this.HandleCommandResult(_mediator.Send(userCommand));
@@ -96,7 +93,7 @@ namespace Common.Controllers.Account
         /// <param name="userCommand">User Id</param>
         /// <returns></returns>
         [HttpPut("UnLockUser")]
-        [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN}")]
+        //[Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN}")]
         public async Task<ActionResult<UserUnlockCommandResult>> LockUser([FromBody] UserUnlockCommand userCommand)
         {
             return await this.HandleCommandResult(_mediator.Send(userCommand));
@@ -108,7 +105,6 @@ namespace Common.Controllers.Account
         /// <param name="ChangePasswordCommand"></param>
         /// <returns></returns>
         [HttpPost("ChangeUserPassword")]
-        
         public async Task<ActionResult<ChangePasswordCommandResult>> ChangePassword([FromBody] ChangePasswordCommand ChangePasswordCommand)
         {
             return await this.HandleCommandResult(_mediator.Send(ChangePasswordCommand));
@@ -128,7 +124,7 @@ namespace Common.Controllers.Account
 
 
         [HttpPost("UpdateUserRoles")]
-        [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN}")]
+        //[Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN}")]
         public async Task<ActionResult<UpdateUserRolesCommandResult>> UpdateUserRoles(UpdateUserRolesCommand updateUserRoles)
         {
 
@@ -149,7 +145,7 @@ namespace Common.Controllers.Account
         
         
         [HttpDelete("DeleteUser")]
-        [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN}")]
+        //[Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN}")]
         public async Task<ActionResult<DeleteUserCommandResult>> DeleteUser(DeleteUserCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));

@@ -1,5 +1,6 @@
 ﻿using Domain.Contractors;
 using Domain.Models.Owners;
+using Domain.Models.RealEstateUnits;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Models.RealEstates
@@ -11,11 +12,27 @@ namespace Domain.Models.RealEstates
         public string Category { get; set; }
         public string Service { get; set; }
 
+        // Additional properties
+        public string? DocumentType { get; set; }
+        public string? DocumentName { get; set; }
+        public string? DocumentNumber { get; set; }
+        public DateTime? IssueDate { get; set; }
+        public string? Guard { get; set; }
+        public long? GuardId { get; set; }
+        public string? GuardMobile { get; set; }
+        public string? AdNumber { get; set; }
+        public string? ElectricityCalculation { get; set; }
+        public string? GasMeter { get; set; }
+        public string? WaterMeter { get; set; }
+        public string? Image { get; set; }
+
+
         [ForeignKey("Owner")]
         public long OwnerId { get; set; }
 
         // Navigation property
         public virtual Owner Owner { get; set; }
+        public virtual ICollection<RealEstateUnit> RealEstateUnits { get; set; } = new HashSet<RealEstateUnit>();
     }
 
 }

@@ -1,14 +1,20 @@
-﻿using Application.Utilities.Extensions;
+﻿using Application.Services.File;
+using Application.Utilities.Extensions;
 using Application.Utilities.Filter;
 using Application.Utilities.Models;
 using Application.Utilities.Sort;
+using Domain.Models.RealEstates;
 using Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Application.RealEstateUnit.Queries.GetAll
 {
-   public record GetAllRealEstateUnitQuery : BasePaginatedQuery, IRequest<GetAllRealEstateUnitQueryResult>;
+    public record GetAllRealEstateUnitQuery : BasePaginatedQuery, IRequest<GetAllRealEstateUnitQueryResult>
+    {
+        public string? UserId { get; set; }
+    }
 
     public record GetAllRealEstateUnitQueryResult : BaseCommandResult
     {
@@ -24,10 +30,13 @@ namespace Application.RealEstateUnit.Queries.GetAll
         public string UnitNumber { get; set; }
         public string NumOfRooms { get; set; }
         public string Type { get; set; }
+        public string? Image { get; set; }
         public long TenantId { get; set; }
+        public long RealEstateId { get; set; }
+
     }
 
-    public class GetAllRealEstateUnitQueryHandler(ApplicationDbContext _dbContext) : IRequestHandler<GetAllRealEstateUnitQuery, GetAllRealEstateUnitQueryResult>
+    public class GetAllRealEstateUnitQueryHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService) : IRequestHandler<GetAllRealEstateUnitQuery, GetAllRealEstateUnitQueryResult>
     {
         public async Task<GetAllRealEstateUnitQueryResult> Handle(GetAllRealEstateUnitQuery request, CancellationToken cancellationToken)
         {
@@ -36,6 +45,7 @@ namespace Application.RealEstateUnit.Queries.GetAll
                 var realEstateUnits = await _dbContext.RealEstateUnits
                                                  .Include(re => re.Tenant)
                                                  .Search(request.SearchTerm)
+                                                 .Where(i => i.CreatedById == request.UserId || request.UserId == null)
                                                  .Select(re => new RealEstateUnitDto
                                                  {
                                                      Id = re.Id,
@@ -45,11 +55,24 @@ namespace Application.RealEstateUnit.Queries.GetAll
                                                      UnitNumber = re.UnitNumber,
                                                      NumOfRooms = re.NumOfRooms,
                                                      Type = re.Type,
-                                                     TenantId = re.TenantId
+                                                     TenantId = re.TenantId,
+                                                     RealEstateId = re.RealEstateId
                                                  })
                                                  .Filter(request.Filters)
                                                  .Sort(request.Sorts ?? new List<SortedQuery>() { new SortedQuery() { PropertyName = "Name", Direction = SortDirection.ASC } })
                                                  .ToPaginatedListAsync(request.PageNumber, request.PageSize);
+
+                var url = "";
+
+                foreach (var realEstate in realEstateUnits.Items)
+                {
+                    var profile = await _attachmentService.GetFilesUrlAsync(Path.Combine("profiles", realEstate.Id.ToString()));
+
+                    if (profile.IsSuccess && profile.Urls.Count > 0)
+                    {
+                        realEstate.Image = profile.Urls[0];
+                    }
+                }
 
                 return new GetAllRealEstateUnitQueryResult
                 {

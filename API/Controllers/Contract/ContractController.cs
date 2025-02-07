@@ -14,7 +14,7 @@ namespace API.Controllers.Contract
     [ApiExplorerSettings(GroupName = "Contract")]
     public class ContractController(IMediator _mediator) : ControllerBase
     {
-        [HttpGet("GetAllContract")]
+        [HttpPost("GetAllContract")]
         public async Task<ActionResult<GetAllContractQueryResult>> GetAll([FromBody] GetAllContractQuery query)
         {
             return await this.HandleCommandResult(_mediator.Send(query));

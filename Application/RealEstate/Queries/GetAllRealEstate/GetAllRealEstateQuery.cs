@@ -1,4 +1,5 @@
-﻿using Application.Utilities.Extensions;
+﻿using Application.Services.File;
+using Application.Utilities.Extensions;
 using Application.Utilities.Filter;
 using Application.Utilities.Models;
 using Application.Utilities.Sort;
@@ -8,7 +9,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.RealEstate.Queries.GetAllRealEstate
 {
-    public record GetAllRealEstateQuery : BasePaginatedQuery, IRequest<GetAllRealEstateQueryResult>;
+    public record GetAllRealEstateQuery : BasePaginatedQuery, IRequest<GetAllRealEstateQueryResult>
+    {
+        public string? UserId { get; set; }
+    }
 
     public record GetAllRealEstateQueryResult : BaseCommandResult
     {
@@ -22,10 +26,12 @@ namespace Application.RealEstate.Queries.GetAllRealEstate
         public string Type { get; set; }
         public string Category { get; set; }
         public string Service { get; set; }
+        public string? Image { get; set; }
+        public long CountRealEstateUnit { get; set; }
         public long OwnerId { get; set; }
     }
 
-    public class GetAllRealEstateQueryHandler(ApplicationDbContext _dbContext) : IRequestHandler<GetAllRealEstateQuery, GetAllRealEstateQueryResult>
+    public class GetAllRealEstateQueryHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService) : IRequestHandler<GetAllRealEstateQuery, GetAllRealEstateQueryResult>
     {
         public async Task<GetAllRealEstateQueryResult> Handle(GetAllRealEstateQuery request, CancellationToken cancellationToken)
         {
@@ -34,6 +40,7 @@ namespace Application.RealEstate.Queries.GetAllRealEstate
                 var realEstates = await _dbContext.RealEstates
                     .Include(re => re.Owner)
                     .Search(request.SearchTerm)
+                    .Where(i => i.CreatedById == request.UserId || request.UserId == null)
                     .Select(re => new RealEstateDto
                     {
                         Id = re.Id,
@@ -41,11 +48,25 @@ namespace Application.RealEstate.Queries.GetAllRealEstate
                         Type = re.Type,
                         Category = re.Category,
                         Service = re.Service,
-                        OwnerId = re.Owner.Id
+                        CountRealEstateUnit = re.RealEstateUnits.Count,
+                        OwnerId = re.Owner.Id,
+                        Image = null                        
                     })
                     .Filter(request.Filters)
-                    .Sort(request.Sorts ?? new List<SortedQuery>() { new SortedQuery() { PropertyName = "Name", Direction = SortDirection.ASC } })
+                    .Sort(request.Sorts ?? new () { new SortedQuery() { PropertyName = "Name", Direction = SortDirection.ASC } })
                     .ToPaginatedListAsync(request.PageNumber, request.PageSize);
+
+                var url = "";
+
+                foreach (var realEstate in realEstates.Items) 
+                {
+                    var profile = await _attachmentService.GetFilesUrlAsync(Path.Combine("profiles", realEstate.Id.ToString()));
+
+                    if (profile.IsSuccess && profile.Urls.Count > 0)
+                    {
+                        realEstate.Image = profile.Urls[0];
+                    }
+                }
 
                 return new GetAllRealEstateQueryResult
                 {

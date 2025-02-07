@@ -23,7 +23,6 @@ namespace Application.Tenant.Queries.GetById
                     {
                         Id = re.Id,
                         Address = re.Address,
-                        Birthday = re.Birthday,
                         City = re.City,
                         Email = re.Email,
                         Gender = re.Gender,

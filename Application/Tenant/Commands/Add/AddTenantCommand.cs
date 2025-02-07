@@ -10,7 +10,7 @@ namespace Application.Tenant.Commands.Add
     {
         public long Id { get; set; }
     }
-    public record CreateTenantDto(string Name, string Email, string PhoneNumber, string Address, string City, string Gender, DateOnly Birthday, string Nationality, string IdNumber);
+    public record CreateTenantDto(string Name, string Email, string PhoneNumber, string Address, string City, string Gender, string Nationality, string IdNumber);
 
     public class AddTenanrCommandHandler(ApplicationDbContext _dbContext) : IRequestHandler<AddTenantCommand, AddTenantCommandResult>
     {
@@ -26,7 +26,6 @@ namespace Application.Tenant.Commands.Add
                     Address = request.dto.Address,
                     City = request.dto.City,
                     Gender = request.dto.Gender,
-                    Birthday = request.dto.Birthday,
                     Nationality = request.dto.Nationality,
                     IdNumber = request.dto.IdNumber
                 };

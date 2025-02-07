@@ -38,7 +38,6 @@ namespace Application.Tenant.Commands.Update
                 tenant.PhoneNumber = request.dto.PhoneNumber;
                 tenant.Address = request.dto.Address;
                 tenant.City = request.dto.City;
-                tenant.Birthday = request.dto.Birthday;
                 tenant.Gender = request.dto.Gender;
                 tenant.Nationality = request.dto.Nationality;
                 tenant.IdNumber = request.dto.IdNumber;

@@ -52,10 +52,10 @@ namespace Configurations
                 name: "default",
                 pattern: "{controller}/{action=Index}/{id?}"));
 #pragma warning restore ASP0014 // Suggest using top level route registrations
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapHub<ChatHub>("/chathub");
-            });
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapHub<ChatHub>("/chathub");
+            //});
 
             app.MapControllers();
             app.MapFallbackToFile("index.html");

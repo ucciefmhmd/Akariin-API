@@ -1,19 +1,38 @@
-﻿using Application.RealEstateUnit.Queries.GetAll;
-using Application.Utilities.Models;
+﻿using Application.Utilities.Models;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
 using Infrastructure;
+using Application.Services.File;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.RealEstateUnit.Commends.Update
 {
-    public record UpdateRealEstateUnitCommand(RealEstateUnitDto dto) : IRequest<UpdateRealEstateUnitCommendResult>;
+    public record UpdateRealEstateUnitCommand(UpdateRealEstateUnitDto dto) : IRequest<UpdateRealEstateUnitCommendResult>;
 
     public record UpdateRealEstateUnitCommendResult : BaseCommandResult
     {
         public long Id { get; init; }
     }
 
-    public class UpdateRealEstateUnitCommendHandler(ApplicationDbContext _dbContext) : IRequestHandler<UpdateRealEstateUnitCommand, UpdateRealEstateUnitCommendResult>
+    public record UpdateRealEstateUnitDto
+    {
+        public long Id { get; set; }
+        public string AnnualRent { get; set; }
+        public string Area { get; set; }
+        public string Floor { get; set; }
+        public string UnitNumber { get; set; }
+        public string NumOfRooms { get; set; }
+        public string Type { get; set; }
+        public string? GasMeter { get; set; }
+        public string? WaterMeter { get; set; }
+        public string? ElectricityCalculation { get; set; }
+        public IFormFile? Image { get; set; }
+        public long TenantId { get; set; }
+        public long RealEstateId { get; set; }
+
+    }
+
+    public class UpdateRealEstateUnitCommendHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService) : IRequestHandler<UpdateRealEstateUnitCommand, UpdateRealEstateUnitCommendResult>
     {
         public async Task<UpdateRealEstateUnitCommendResult> Handle(UpdateRealEstateUnitCommand request, CancellationToken cancellationToken)
         {
@@ -39,6 +58,14 @@ namespace Application.RealEstateUnit.Commends.Update
                 realEstateUnit.Type = request.dto.Type;
                 realEstateUnit.UnitNumber = request.dto.UnitNumber;
                 realEstateUnit.TenantId = request.dto.TenantId;
+                realEstateUnit.WaterMeter = request.dto.WaterMeter;
+                realEstateUnit.RealEstateId = request.dto.RealEstateId;
+                realEstateUnit.GasMeter = request.dto.GasMeter;
+                realEstateUnit.ElectricityCalculation = request.dto.ElectricityCalculation;
+                if (request.dto.Image is not null)
+                {
+                    await _attachmentService.UploadFilesAsync(Path.Combine("profiles", request.dto.Id.ToString()), request.dto.Image);
+                }
 
                 var validationResults = new List<ValidationResult>();
 

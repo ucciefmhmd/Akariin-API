@@ -23,7 +23,6 @@ namespace Application.Tenant.Queries.GetAll
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
         public string Gender { get; set; }
-        public DateOnly Birthday { get; set; }
         public string Nationality { get; set; }
         public string IdNumber { get; set; }
     }
@@ -45,7 +44,6 @@ namespace Application.Tenant.Queries.GetAll
                         Address = t.Address,
                         PhoneNumber = t.PhoneNumber,
                         Gender = t.Gender,
-                        Birthday = t.Birthday,
                         Nationality = t.Nationality,
                         IdNumber = t.IdNumber
                     })

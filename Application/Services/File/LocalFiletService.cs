@@ -89,6 +89,7 @@ namespace Application.Services.File
                 {
                     await file.CopyToAsync(stream);
                 }
+
                 results.Add(new UploadFile { Url=filePath,FileName= Path.GetFileName(filePath) } );
 
                 return new UploadFileResult() { IsSuccess = true, UploadFiles = results };

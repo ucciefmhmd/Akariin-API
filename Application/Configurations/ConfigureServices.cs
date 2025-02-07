@@ -4,10 +4,10 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Application.Services.UserService;
 using Application.Services.File;
-using Application.Services.ImageCompress;
 
 using Application.Services.Notificationsd;
 using FluentValidation;
+using Application.Utilities.Contractors;
 
 namespace Application.Configurations
 {
@@ -25,13 +25,16 @@ namespace Application.Configurations
             services.AddScoped<LocalFiletService>();
             
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IFileService, LocalFiletService>();
+
+            services.AddScoped<AttachmentService>();
             //services.AddScoped<IImageCompress, ImageCompress>();
 
             //FirebaseApp.Create(new AppOptions()
             //{
             //    Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TaskManager-Firebase-Key.json"))
             //});
-            
+
             services.AddDistributedMemoryCache(options => { });
             
             return services;
