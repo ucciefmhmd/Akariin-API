@@ -14,31 +14,31 @@ namespace API.Controllers.Owner
     [ApiExplorerSettings(GroupName = "Owner")]
     public class OwnerController(IMediator _mediator) : ControllerBase
     {
-        [HttpPost("GetAllOwners")]
+        [HttpPost("GetAll")]
         public async Task<ActionResult<GetAllOwnersQueryResult>> GetAll([FromBody] GetAllOwnersQuery query)
         {
             return await this.HandleCommandResult(_mediator.Send(query));
         }
 
-        [HttpGet("{id:long}")]
+        [HttpGet("GetById/{id:long}")]
         public async Task<ActionResult<GetOwnerByIdQueryResult>> GetById(long id)
         {
             return await this.HandleCommandResult(_mediator.Send(new GetOwnerByIdQuery(id)));
         }
 
-        [HttpPost("AddOwner")]
+        [HttpPost("Add")]
         public async Task<ActionResult<AddOwnerCommandResult>> Add([FromBody] AddOwnerCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }
 
-        [HttpPut("UpdateOwner")]
+        [HttpPut("Update")]
         public async Task<ActionResult<UpdateOwnerCommandResult>> Update([FromBody] UpdateOwnerCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }
 
-        [HttpDelete("{id:long}")]
+        [HttpDelete("Delete/{id:long}")]
         public async Task<ActionResult<DeleteOwnerCommandResult>> Delete(long id)
         {
             return await this.HandleCommandResult(_mediator.Send(new DeleteOwnerCommand(id)));

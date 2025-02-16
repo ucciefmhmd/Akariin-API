@@ -1,17 +1,10 @@
 ﻿using LinqKit;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Newtonsoft.Json.Linq;
 using Application.Utilities.Contractors;
 using Application.Utilities.Extensions;
 using Application.Utilities.Models;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Utilities.Filter
 {
@@ -44,8 +37,6 @@ namespace Application.Utilities.Filter
             return query.Where(predicate);
         }
 
-
-
         private Expression<Func<TEntity, bool>> GetComparer<TEntity>(FilteredQuery filter)
         {
             if (string.IsNullOrEmpty(filter.PropertyName) || !filter.Values.Any())
@@ -71,6 +62,19 @@ namespace Application.Utilities.Filter
                     return GetNullableIntFilter<TEntity>(filter.PropertyName, filter.Values);
                 }
                 return InnerGetComparer<TEntity, int?, int>(filter.PropertyName, filter.Type, filter.Values.Select(v => !string.IsNullOrWhiteSpace(v) ? new int?(int.Parse(v)) : null));
+            }
+            if (propertyType.IsAssignableFrom(typeof(long)))
+            {
+                var underlyingType = Nullable.GetUnderlyingType(propertyType);
+                if (underlyingType != null && underlyingType.IsAssignableFrom(typeof(long)))
+                {
+                    return GetNullableIntFilter<TEntity>(filter.PropertyName, filter.Values);
+                }
+                return InnerGetComparer<TEntity, long?, long>(
+                    filter.PropertyName,
+                    filter.Type,
+                    filter.Values.Select(v => !string.IsNullOrWhiteSpace(v) ? new long?(long.Parse(v)) : null)
+                );
             }
             if (propertyType.IsAssignableFrom(typeof(DateTime?)))
             {
@@ -108,6 +112,7 @@ namespace Application.Utilities.Filter
 
             throw new ArgumentException("Unexpected filter type " + filter.Type, "filter");
         }
+        
         private Expression<Func<TEntity, bool>> GetGuidFilter<TEntity>(string propertyName, IEnumerable<string> values)
         {
             if (values == null || !values.Any())
@@ -204,6 +209,7 @@ namespace Application.Utilities.Filter
             }
             return comparer;
         }
+        
         private Expression<Func<TEntity, bool>> GetNullableIntFilter<TEntity>(string propertyName, IEnumerable<string> values)
         {
             if (values == null || !values.Any())
@@ -244,7 +250,6 @@ namespace Application.Utilities.Filter
 
             return lambda;
         }
-
 
         private Expression<Func<TEntity, bool>> GetEnumFilter<TEntity>(string propertyName, IEnumerable<string> values, Type enumType)
         {
@@ -358,9 +363,6 @@ namespace Application.Utilities.Filter
             var lambda = Expression.Lambda<Func<TEntity, bool>>(combinedExpression, parameterExp);
             return lambda;
         }
-
-
-
 
 
 

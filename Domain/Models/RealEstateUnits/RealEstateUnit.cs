@@ -18,8 +18,10 @@ namespace Domain.Models.RealEstateUnits
         public string? ElectricityCalculation { get; set; }
         public string? Image { get; set; }
 
+        public string Status { get; set; }
+
         [ForeignKey("Tenant")]
-        public long TenantId { get; set; }
+        public long? TenantId { get; set; }
 
         [ForeignKey("RealEstate")]
         public long RealEstateId { get; set; }

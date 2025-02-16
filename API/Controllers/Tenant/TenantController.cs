@@ -16,31 +16,31 @@ namespace API.Controllers.Tenant
     [ApiVersion("1.0")]
     public class TenantController(IMediator _mediator) : ControllerBase
     {
-        [HttpPost("GetAllTenant")]
+        [HttpPost("GetAll")]
         public async Task<ActionResult<GetAllTenantQueryResult>> GetAll([FromBody] GetAllTenantQuery query)
         {
             return await this.HandleCommandResult(_mediator.Send(query));
         }
 
-        [HttpGet("{id:long}")]
+        [HttpGet("GetById/{id:long}")]
         public async Task<ActionResult<GetTenantByIdQueryResult>> GetById(long id)
         {
             return await this.HandleCommandResult(_mediator.Send(new GetTenantByIdQuery(id)));
         }
 
-        [HttpPost("AddTenant")]
+        [HttpPost("Add")]
         public async Task<ActionResult<AddTenantCommandResult>> Add([FromBody] AddTenantCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }
 
-        [HttpPut("UpdateTenant")]
+        [HttpPut("Update")]
         public async Task<ActionResult<UpdateTenantCommandResult>> Update([FromBody] UpdateTenantCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }
 
-        [HttpDelete("{id:long}")]
+        [HttpDelete("Delete/{id:long}")]
         public async Task<ActionResult<DeleteTenantCommandResult>> Delete(long id)
         {
             return await this.HandleCommandResult(_mediator.Send(new DeleteTenantCommand(id)));

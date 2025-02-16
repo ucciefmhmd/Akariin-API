@@ -4,13 +4,12 @@ using MediatR;
 
 namespace Application.Tenant.Commands.Add
 {
-    public record AddTenantCommand(CreateTenantDto dto) : IRequest<AddTenantCommandResult>;
+    public record AddTenantCommand(string Name, string PhoneNumber, string Address, string City, string Gender, string Nationality, string IdNumber) : IRequest<AddTenantCommandResult>;
 
     public record AddTenantCommandResult : BaseCommandResult
     {
         public long Id { get; set; }
     }
-    public record CreateTenantDto(string Name, string Email, string PhoneNumber, string Address, string City, string Gender, string Nationality, string IdNumber);
 
     public class AddTenanrCommandHandler(ApplicationDbContext _dbContext) : IRequestHandler<AddTenantCommand, AddTenantCommandResult>
     {
@@ -20,14 +19,13 @@ namespace Application.Tenant.Commands.Add
             {
                 var tenant = new Domain.Models.Tenants.Tenant
                 {
-                    Name = request.dto.Name,
-                    Email = request.dto.Email,
-                    PhoneNumber = request.dto.PhoneNumber,
-                    Address = request.dto.Address,
-                    City = request.dto.City,
-                    Gender = request.dto.Gender,
-                    Nationality = request.dto.Nationality,
-                    IdNumber = request.dto.IdNumber
+                    Name = request.Name,
+                    PhoneNumber = request.PhoneNumber,
+                    Address = request.Address,
+                    City = request.City,
+                    Gender = request.Gender,
+                    Nationality = request.Nationality,
+                    IdNumber = request.IdNumber
                 };
 
 

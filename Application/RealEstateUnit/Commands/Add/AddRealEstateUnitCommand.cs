@@ -6,27 +6,11 @@ using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 namespace Application.RealEstateUnit.Commends.Add
 {
-    public record AddRealEstateUnitCommand(CreateRealestateUnitDto dto): IRequest<AddRealEstateUnitCommendResult>;
+    public record AddRealEstateUnitCommand(string AnnualRent, string Area, string Floor, string UnitNumber, string NumOfRooms, string Type, string? GasMeter, string? WaterMeter, string? ElectricityCalculation, string Status, IFormFile? Image, long? TenantId, long RealEstateId) : IRequest<AddRealEstateUnitCommendResult>;
 
     public record AddRealEstateUnitCommendResult : BaseCommandResult
     {
         public long Id { get; set; }
-    }
-
-    public record CreateRealestateUnitDto
-    {
-        public string AnnualRent { get; set; }
-        public string Area { get; set; }
-        public string Floor { get; set; }
-        public string UnitNumber { get; set; }
-        public string NumOfRooms { get; set; }
-        public string Type { get; set; }
-        public string? GasMeter { get; set; }
-        public string? WaterMeter { get; set; }
-        public string? ElectricityCalculation { get; set; }
-        public IFormFile? Image { get; set; }
-        public long TenantId { get; set; }
-        public long RealEstateId { get; set; }
     }
 
     public class AddRealEstateUnitCommendHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService) : IRequestHandler<AddRealEstateUnitCommand, AddRealEstateUnitCommendResult>
@@ -37,17 +21,18 @@ namespace Application.RealEstateUnit.Commends.Add
             {
                 var realEstateUnit = new Domain.Models.RealEstateUnits.RealEstateUnit
                 {
-                    NumOfRooms = request.dto.NumOfRooms,
-                    AnnualRent = request.dto.AnnualRent,
-                    Area = request.dto.Area,
-                    Floor = request.dto.Floor,
-                    Type = request.dto.Type,
-                    UnitNumber = request.dto.UnitNumber,
-                    TenantId = request.dto.TenantId,
-                    WaterMeter = request.dto.WaterMeter,
-                    RealEstateId = request.dto.RealEstateId,
-                    GasMeter = request.dto.GasMeter,
-                    ElectricityCalculation = request.dto.ElectricityCalculation,
+                    NumOfRooms = request.NumOfRooms,
+                    AnnualRent = request.AnnualRent,
+                    Area = request.Area,
+                    Floor = request.Floor,
+                    Type = request.Type,
+                    UnitNumber = request.UnitNumber,
+                    TenantId = request.TenantId,
+                    WaterMeter = request.WaterMeter,
+                    Status = request.Status,
+                    RealEstateId = request.RealEstateId,
+                    GasMeter = request.GasMeter,
+                    ElectricityCalculation = request.ElectricityCalculation,
                 };
 
                 var validationResults = new List<ValidationResult>();
@@ -68,9 +53,9 @@ namespace Application.RealEstateUnit.Commends.Add
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
                 // Upload the image if provided
-                if (request.dto.Image is not null)
+                if (request.Image is not null)
                 {
-                    await _attachmentService.UploadFilesAsync(Path.Combine("profiles", realEstateUnit.Id.ToString()), request.dto.Image);
+                    await _attachmentService.UploadFilesAsync(Path.Combine("profiles", realEstateUnit.Id.ToString()), request.Image);
                 }
 
                 return new AddRealEstateUnitCommendResult

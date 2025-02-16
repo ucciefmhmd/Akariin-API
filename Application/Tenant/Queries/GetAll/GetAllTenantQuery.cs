@@ -1,4 +1,5 @@
-﻿using Application.Utilities.Extensions;
+﻿using Application.RealEstateUnit.Queries.GetAll;
+using Application.Utilities.Extensions;
 using Application.Utilities.Filter;
 using Application.Utilities.Models;
 using Application.Utilities.Sort;
@@ -7,7 +8,10 @@ using MediatR;
 
 namespace Application.Tenant.Queries.GetAll
 {
-    public record GetAllTenantQuery : BasePaginatedQuery, IRequest<GetAllTenantQueryResult>;
+    public record GetAllTenantQuery : BasePaginatedQuery, IRequest<GetAllTenantQueryResult>
+    {
+        public string? UserId { get; set; }
+    }
 
     public record GetAllTenantQueryResult : BaseCommandResult
     {
@@ -18,13 +22,16 @@ namespace Application.Tenant.Queries.GetAll
     {
         public long Id { get; init; }
         public string Name { get; set; }
-        public string Email { get; set; }
         public string City { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
         public string Gender { get; set; }
         public string Nationality { get; set; }
         public string IdNumber { get; set; }
+        public CreatedByVM CreatedBy { get; set; }
+        public CreatedByVM ModifiedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
     }
 
     public class GetAllTenantQueryHandler(ApplicationDbContext _dbContext) : IRequestHandler<GetAllTenantQuery, GetAllTenantQueryResult> 
@@ -35,17 +42,21 @@ namespace Application.Tenant.Queries.GetAll
             {
                 var tenant = await _dbContext.Tenant
                     .Search(request.SearchTerm)
+                    .Where(i => i.CreatedById == request.UserId || request.UserId == null)
                     .Select(t => new TenantDto
                     {
                         Id = t.Id,
                         Name = t.Name,
-                        Email = t.Email,
                         City = t.City,
                         Address = t.Address,
                         PhoneNumber = t.PhoneNumber,
                         Gender = t.Gender,
                         Nationality = t.Nationality,
-                        IdNumber = t.IdNumber
+                        IdNumber = t.IdNumber,
+                        CreatedBy = t.CreatedBy != null ? new CreatedByVM { Name = t.CreatedBy.Name, Id = t.CreatedBy.Id } : null,
+                        ModifiedBy = t.ModifiedBy != null ? new CreatedByVM { Name = t.ModifiedBy.Name, Id = t.ModifiedBy.Id } : null,
+                        CreatedDate = t.CreatedDate,
+                        ModifiedDate = t.ModifiedDate,
                     })
                     .Filter(request.Filters)
                     .Sort(request.Sorts ?? new List<SortedQuery>() { new SortedQuery() { PropertyName = "Name", Direction = SortDirection.ASC } })

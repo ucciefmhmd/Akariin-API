@@ -28,7 +28,20 @@ namespace Application.RealEstate.Queries.GetAllRealEstate
         public string Service { get; set; }
         public string? Image { get; set; }
         public long CountRealEstateUnit { get; set; }
+        public string Status { get; set; }
         public long OwnerId { get; set; }
+        public CreatedByVM CreatedBy { get; set; }
+        public CreatedByVM ModifiedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
+
+    }
+
+    public record CreatedByVM
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Image { get; set; }
     }
 
     public class GetAllRealEstateQueryHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService) : IRequestHandler<GetAllRealEstateQuery, GetAllRealEstateQueryResult>
@@ -50,15 +63,18 @@ namespace Application.RealEstate.Queries.GetAllRealEstate
                         Service = re.Service,
                         CountRealEstateUnit = re.RealEstateUnits.Count,
                         OwnerId = re.Owner.Id,
-                        Image = null                        
+                        CreatedBy = re.CreatedBy != null ? new CreatedByVM { Name = re.CreatedBy.Name, Id = re.CreatedBy.Id } : null,
+                        ModifiedBy = re.ModifiedBy != null ? new CreatedByVM { Name = re.ModifiedBy.Name, Id = re.ModifiedBy.Id } : null,
+                        CreatedDate = re.CreatedDate,
+                        ModifiedDate = re.ModifiedDate,
+                        Status = re.Status,
+                        Image = re.Image                      
                     })
                     .Filter(request.Filters)
                     .Sort(request.Sorts ?? new () { new SortedQuery() { PropertyName = "Name", Direction = SortDirection.ASC } })
                     .ToPaginatedListAsync(request.PageNumber, request.PageSize);
 
-                var url = "";
-
-                foreach (var realEstate in realEstates.Items) 
+                foreach (var realEstate in realEstates.Items)
                 {
                     var profile = await _attachmentService.GetFilesUrlAsync(Path.Combine("profiles", realEstate.Id.ToString()));
 

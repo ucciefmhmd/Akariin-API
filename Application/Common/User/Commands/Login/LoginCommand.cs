@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Domain.Common;
 using Domain.Identity;
@@ -101,9 +100,9 @@ namespace Application.Common.User.Commands.Login
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub,user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti,user.Id),
-                new Claim(JwtRegisteredClaimNames.Email,user.Email),
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, user.Id),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("uss",user.SecurityStamp)
             }.Union(userClaims).Union(roleClaims);
 
@@ -119,7 +118,7 @@ namespace Application.Common.User.Commands.Login
             var jwtSecurityToken = new JwtSecurityToken(issuer: _configuration["JWT:Issuer"],
                                                         audience: _configuration["JWT:Audience"],
                                                         claims: claims,
-                                                        expires: DateTime.UtcNow.AddDays(double.Parse(_configuration["JWT:DurationInDays"])),
+                                                        expires: DateTime.UtcNow.AddDays(1),
                                                         signingCredentials: signingCredentials);
 
             return jwtSecurityToken;

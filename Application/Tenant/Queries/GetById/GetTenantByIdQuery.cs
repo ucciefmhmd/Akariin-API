@@ -1,4 +1,5 @@
-﻿using Application.Tenant.Queries.GetAll;
+﻿using Application.RealEstateUnit.Queries.GetAll;
+using Application.Tenant.Queries.GetAll;
 using Application.Utilities.Models;
 using Infrastructure;
 using MediatR;
@@ -19,17 +20,21 @@ namespace Application.Tenant.Queries.GetById
             try
             {
                 var tenant = await _dbContext.Tenant
-                    .Select(re => new TenantDto
+                    .Select(t => new TenantDto
                     {
-                        Id = re.Id,
-                        Address = re.Address,
-                        City = re.City,
-                        Email = re.Email,
-                        Gender = re.Gender,
-                        IdNumber = re.IdNumber,
-                        Name = re.Name, 
-                        Nationality = re.Nationality,
-                        PhoneNumber = re.PhoneNumber
+                        Id = t.Id,
+                        Address = t.Address,
+                        City = t.City,
+                        Gender = t.Gender,
+                        IdNumber = t.IdNumber,
+                        Name = t.Name, 
+                        Nationality = t.Nationality,
+                        PhoneNumber = t.PhoneNumber,
+                        CreatedBy = t.CreatedBy != null ? new CreatedByVM { Name = t.CreatedBy.Name, Id = t.CreatedBy.Id } : null,
+                        ModifiedBy = t.ModifiedBy != null ? new CreatedByVM { Name = t.ModifiedBy.Name, Id = t.ModifiedBy.Id } : null,
+                        CreatedDate = t.CreatedDate,
+                        ModifiedDate = t.ModifiedDate,
+
                     })
                     .FirstOrDefaultAsync(cancellationToken);
 

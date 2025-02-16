@@ -10,9 +10,9 @@ namespace Domain.Contractors
         public T Id { get; set; }
 
         [DataType(DataType.DateTime)]
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         [DataType(DataType.DateTime)]
-        public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;
+        public DateTime ModifiedDate { get; set; }
 
         public virtual ApplicationUser? CreatedBy { get; set; }
         [ForeignKey("CreatedBy")]

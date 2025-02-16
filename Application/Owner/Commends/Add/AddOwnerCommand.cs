@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Owner.Commends.Add
 {
-    public record AddOwnerCommand(CreateOnwerDto createOnwerDto) : IRequest<AddOwnerCommandResult>;
+    public record AddOwnerCommand(CreateOnwerDto dto) : IRequest<AddOwnerCommandResult>;
     public record AddOwnerCommandResult : BaseCommandResult
     {
         public long Id { get; set; }
@@ -18,10 +18,8 @@ namespace Application.Owner.Commends.Add
         public string? Address { get; set; }
         public string PhoneNumber { get; set; }
         public string? Gender { get; set; }
-        public DateOnly? Birthday { get; set; }
         public string? Nationality { get; set; }
         public string Role { get; set; }
-        public string? IdNumber { get; set; }
     }
 
     public class AddOwnerCommandResultHandler(ApplicationDbContext _dbContext) : IRequestHandler<AddOwnerCommand, AddOwnerCommandResult>
@@ -32,14 +30,13 @@ namespace Application.Owner.Commends.Add
             {
                 var _owner = new Domain.Models.Owners.Owner
                 {
-                    City = request.createOnwerDto.City,
-                    Address = request.createOnwerDto.Address,
-                    PhoneNumber = request.createOnwerDto.PhoneNumber,
-                    Nationality = request.createOnwerDto.Nationality,
-                    Role = request.createOnwerDto.Role,
-                    Name = request.createOnwerDto.Name,
-                    Birthday = request.createOnwerDto.Birthday,
-                    Gender = request.createOnwerDto.Gender
+                    City = request.dto.City,
+                    Address = request.dto.Address,
+                    PhoneNumber = request.dto.PhoneNumber,
+                    Nationality = request.dto.Nationality,
+                    Role = request.dto.Role,
+                    Name = request.dto.Name,
+                    Gender = request.dto.Gender
                 };
 
                 var validationResults = new List<ValidationResult>();

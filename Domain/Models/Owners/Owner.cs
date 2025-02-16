@@ -21,7 +21,6 @@ namespace Domain.Models.Owners
         public string PhoneNumber { get; set; }
 
         public string? Gender { get; set; }
-        public DateOnly? Birthday { get; set; }
         public string? Nationality { get; set; }
         public string Role { get; set; }
 

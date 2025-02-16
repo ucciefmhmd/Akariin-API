@@ -1,4 +1,5 @@
 ﻿using Application.Contract.Queries.GetAll;
+using Application.RealEstateUnit.Queries.GetAll;
 using Application.Utilities.Models;
 using Infrastructure;
 using MediatR;
@@ -33,7 +34,11 @@ namespace Application.Contract.Queries.GetById
                                             Type = c.Type,
                                             TerminationMethod = c.TerminationMethod,
                                             RealEstateUnitId = c.RealEstateUnitId,
-                                            TenantId = c.TenantId
+                                            TenantId = c.TenantId,
+                                            CreatedBy = c.CreatedBy != null ? new CreatedByVM { Name = c.CreatedBy.Name, Id = c.CreatedBy.Id } : null,
+                                            ModifiedBy = c.ModifiedBy != null ? new CreatedByVM { Name = c.ModifiedBy.Name, Id = c.ModifiedBy.Id } : null,
+                                            CreatedDate = c.CreatedDate,
+                                            ModifiedDate = c.ModifiedDate
                                         }).FirstOrDefaultAsync(cancellationToken);
 
                 if (contract == null)

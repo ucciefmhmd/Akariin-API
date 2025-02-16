@@ -24,6 +24,7 @@ namespace Application.Services.File
         {
             return await _fileService.GetFilesUrlAsync(Id);
         }
+    
         public async Task<DownloadFileResult> DownloadFileAsync(string fileName)
         {
             return await _fileService.DownloadFileAsync(fileName);

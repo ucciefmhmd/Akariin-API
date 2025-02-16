@@ -1,4 +1,5 @@
-﻿using Application.Services.File;
+﻿using Application.RealEstate.Queries.GetAllRealEstate;
+using Application.Services.File;
 using Application.Utilities.Models;
 using Infrastructure;
 using MediatR;
@@ -32,7 +33,14 @@ namespace Application.RealEstate.Queries.GetByIdRealEstate
         public string? ElectricityCalculation { get; set; }
         public string? GasMeter { get; set; }
         public string? WaterMeter { get; set; }
+        public string Status { get; set; }
         public long OwnerId { get; set; }
+        public long CountRealEstateUnit { get; set; }
+        public CreatedByVM CreatedBy { get; set; }
+        public CreatedByVM ModifiedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
+
     }
     public class GetRealEstateByIdQueryHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService) : IRequestHandler<GetRealEstateByIdQuery, GetRealEstateByIdQueryResult>
     {
@@ -62,7 +70,13 @@ namespace Application.RealEstate.Queries.GetByIdRealEstate
                         ElectricityCalculation = re.ElectricityCalculation,
                         GasMeter = re.GasMeter,
                         WaterMeter = re.WaterMeter,
-                        OwnerId = re.Owner.Id
+                        OwnerId = re.Owner.Id,
+                        CountRealEstateUnit = re.RealEstateUnits.Count,
+                        Status = re.Status,
+                        CreatedBy = re.CreatedBy != null ? new CreatedByVM { Name = re.CreatedBy.Name, Id = re.CreatedBy.Id } : null,
+                        ModifiedBy = re.ModifiedBy != null ? new CreatedByVM { Name = re.ModifiedBy.Name, Id = re.ModifiedBy.Id } : null,
+                        CreatedDate = re.CreatedDate,
+                        ModifiedDate = re.ModifiedDate
                     })
                     .FirstOrDefaultAsync(cancellationToken);
 
@@ -74,8 +88,6 @@ namespace Application.RealEstate.Queries.GetByIdRealEstate
                         Errors = { "Real estate not found." }
                     };
                 }
-
-                var url = "";
 
                 var profile = await _attachmentService.GetFilesUrlAsync(Path.Combine("profiles", realEstate.Id.ToString()));
 

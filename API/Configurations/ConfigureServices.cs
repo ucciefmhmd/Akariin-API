@@ -130,13 +130,11 @@ public static class ConfigureServices
                 Title = "Real Estate API",
             });
             
-            
             swagger.SwaggerDoc("RealEstateUnit", new OpenApiInfo
             {
                 Version = "v1",
                 Title = "Real Estate Unit API",
             });
-
 
             swagger.SwaggerDoc("Bill", new OpenApiInfo
             {

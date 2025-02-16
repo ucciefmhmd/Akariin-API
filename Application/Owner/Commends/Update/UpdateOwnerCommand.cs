@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Owner.Commends.Update
 {
-    public record UpdateOwnerCommand(UpdateOwnerDto UpdateOwnerDto) : IRequest<UpdateOwnerCommandResult>;
+    public record UpdateOwnerCommand(UpdateOwnerDto dto) : IRequest<UpdateOwnerCommandResult>;
 
     public record UpdateOwnerCommandResult : BaseCommandResult
     {
@@ -17,15 +17,12 @@ namespace Application.Owner.Commends.Update
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public string Email { get; set; }
         public string City { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
         public string Gender { get; set; }
-        public DateOnly Birthday { get; set; }
         public string Nationality { get; set; }
         public string Role { get; set; }
-        public string IdNumber { get; set; }
     }
     public class UpdateOwnerCommandHandler(ApplicationDbContext _dbContext) : IRequestHandler<UpdateOwnerCommand, UpdateOwnerCommandResult>
     {
@@ -33,7 +30,7 @@ namespace Application.Owner.Commends.Update
         {
             try
             {
-                var owner = await _dbContext.Owners.FirstOrDefaultAsync(o => o.Id == request.UpdateOwnerDto.Id, cancellationToken);
+                var owner = await _dbContext.Owners.FirstOrDefaultAsync(o => o.Id == request.dto.Id, cancellationToken);
 
                 if (owner == null)
                 {
@@ -45,16 +42,16 @@ namespace Application.Owner.Commends.Update
                     };
                 }
 
-                owner.City = request.UpdateOwnerDto.City;
-                owner.Address = request.UpdateOwnerDto.Address;
-                owner.PhoneNumber = request.UpdateOwnerDto.PhoneNumber;
-                owner.Nationality = request.UpdateOwnerDto.Nationality;
-                owner.Role = request.UpdateOwnerDto.Role;
-                owner.Name = request.UpdateOwnerDto.Name;
-                owner.Birthday = request.UpdateOwnerDto.Birthday;
-                owner.Gender = request.UpdateOwnerDto.Gender;
+                owner.City = request.dto.City;
+                owner.Address = request.dto.Address;
+                owner.PhoneNumber = request.dto.PhoneNumber;
+                owner.Nationality = request.dto.Nationality;
+                owner.Role = request.dto.Role;
+                owner.Name = request.dto.Name;
+                owner.Gender = request.dto.Gender;
 
                 var validationResults = new List<ValidationResult>();
+
                 var isValid = Validator.TryValidateObject(owner, new ValidationContext(owner), validationResults, true);
 
                 if (!isValid)

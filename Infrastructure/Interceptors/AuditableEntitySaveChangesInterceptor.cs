@@ -1,12 +1,10 @@
 ﻿using Domain.Contractors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Infrastructure.Common.Extensions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Domain.Models;
 
 namespace Infrastructure.Interceptors;
 
@@ -35,21 +33,41 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
     public void UpdateEntities(DbContext? context)
     {
         if (context == null) return;
-        var userId = _httpContext.HttpContext?.User?.FindFirstValue(JwtRegisteredClaimNames.Jti);
-        foreach (var entry in context.ChangeTracker.Entries<ModelBase<Guid>>())
-        {
-            if (entry.State == EntityState.Added)
-            {
-                entry.Entity.CreatedById = userId;
-                entry.Entity.CreatedDate = DateTime.UtcNow;
-            } 
 
-            if (/*entry.State == EntityState.Added ||*/ entry.State == EntityState.Modified || entry.HasChangedOwnedEntities())
+        var userId = _httpContext.HttpContext?.User?.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+        foreach (var entry in context.ChangeTracker.Entries().Where(e => e.Entity is ModelBase<long> || e.Entity is ModelBase<Guid>))
+        {
+            if (entry.Entity is ModelBase<long> longEntity)
             {
-                entry.Entity.ModifiedById = userId;
-                entry.Entity.ModifiedDate = DateTime.UtcNow;
+                if (entry.State == EntityState.Added)
+                {
+                    longEntity.CreatedById = userId;
+                    longEntity.CreatedDate = DateTime.UtcNow;
+                }
+
+                if (entry.State == EntityState.Modified || entry.HasChangedOwnedEntities())
+                {
+                    longEntity.ModifiedById = userId;
+                    longEntity.ModifiedDate = DateTime.UtcNow;
+                }
+            }
+            else if (entry.Entity is ModelBase<Guid> guidEntity)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    guidEntity.CreatedById = userId;
+                    guidEntity.CreatedDate = DateTime.UtcNow;
+                }
+
+                if (entry.State == EntityState.Modified || entry.HasChangedOwnedEntities())
+                {
+                    guidEntity.ModifiedById = userId;
+                    guidEntity.ModifiedDate = DateTime.UtcNow;
+                }
             }
         }
+
     }
 }
 

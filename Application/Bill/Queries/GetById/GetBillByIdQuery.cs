@@ -1,4 +1,5 @@
 ﻿using Application.Bill.Queries.GetAll;
+using Application.RealEstateUnit.Queries.GetAll;
 using Application.Utilities.Extensions;
 using Application.Utilities.Models;
 using Infrastructure;
@@ -11,7 +12,7 @@ namespace Application.Bill.Queries.GetById
 
     public record GetBillByIdQueryResult : BaseCommandResult
     {
-        public BillDto BillDto { get; set; }
+        public BillDto dto { get; set; }
     }
 
     public class GetBillByIdQueryHandler(ApplicationDbContext _dbContext) : IRequestHandler<GetBillByIdQuery, GetBillByIdQueryResult>
@@ -31,7 +32,11 @@ namespace Application.Bill.Queries.GetById
                         Salary = b.Salary,
                         Discount = b.Discount,
                         Tax = b.Tax,
-                        ContractId = b.Contract.Id
+                        ContractId = b.Contract.Id,
+                        CreatedBy = b.CreatedBy != null ? new CreatedByVM { Name = b.CreatedBy.Name, Id = b.CreatedBy.Id } : null,
+                        ModifiedBy = b.ModifiedBy != null ? new CreatedByVM { Name = b.ModifiedBy.Name, Id = b.ModifiedBy.Id } : null,
+                        CreatedDate = b.CreatedDate,
+                        ModifiedDate = b.ModifiedDate
                     }).FirstOrDefaultAsync(b => b.Id == request.Id, cancellationToken);
 
                 if (bill == null)
@@ -46,7 +51,7 @@ namespace Application.Bill.Queries.GetById
                 return new GetBillByIdQueryResult
                 {
                     IsSuccess = true,
-                    BillDto = bill
+                    dto = bill
                 };
             }
             catch (Exception ex)

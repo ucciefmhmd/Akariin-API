@@ -12,6 +12,7 @@ using Domain.Models.RealEstateUnits;
 using Domain.Models.Tenants;
 using Domain.Models.Bills;
 using Domain.Models.Contracts;
+using Domain.Models.RoleSysem;
 
 
 namespace Infrastructure;
@@ -66,10 +67,19 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
     }
 
     public DbSet<Owner> Owners { get; set; }
+
     public DbSet<RealEstate> RealEstates { get; set; }
+
     public DbSet<RealEstateUnit> RealEstateUnits { get; set; }
+
     public DbSet<Tenant> Tenant { get; set; }
+
     public DbSet<Contract> Contracts { get; set; }
+
     public DbSet<Bill> Bills { get; set; }
+
+    public DbSet<Page> Pages { get; set; }
+
+    public DbSet<UserPageRole> UserPageRoles { get; set; }
 
 }

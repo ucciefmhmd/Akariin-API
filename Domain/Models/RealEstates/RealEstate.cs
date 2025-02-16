@@ -25,7 +25,7 @@ namespace Domain.Models.RealEstates
         public string? GasMeter { get; set; }
         public string? WaterMeter { get; set; }
         public string? Image { get; set; }
-
+        public string Status { get; set; }
 
         [ForeignKey("Owner")]
         public long OwnerId { get; set; }

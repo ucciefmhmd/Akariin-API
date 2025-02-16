@@ -6,6 +6,8 @@ using Application.RealEstate.Commends.UpdateRealEstate;
 using Application.RealEstate.Queries.GetAllRealEstate;
 using Application.RealEstate.Queries.GetByIdRealEstate;
 using Common;
+using Microsoft.AspNetCore.Authorization;
+using Domain.Common.Constants;
 
 namespace API.Controllers.RealEstate
 {
@@ -14,7 +16,6 @@ namespace API.Controllers.RealEstate
     [ApiExplorerSettings(GroupName = "RealEstate")]
     public class RealEstateController(IMediator _mediator) : ControllerBase
     {
-
         [HttpPost("GetAllRealEstate")]
         public async Task<ActionResult<GetAllRealEstateQueryResult>> GetAll([FromBody] GetAllRealEstateQuery query)
         {
@@ -28,6 +29,7 @@ namespace API.Controllers.RealEstate
         }
 
         [HttpPost("AddRealEstate")]
+        [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN},{Roles.USER}")]
         public async Task<ActionResult<AddRealEstateCommandResult>> Add([FromForm] AddRealEstateCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));

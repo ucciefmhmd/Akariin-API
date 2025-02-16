@@ -66,6 +66,7 @@ namespace Domain.Common
         CantAddProduct,
         CompleteYourBillingInfo,
         CantAddAsChild,
+        Unauthorized
     }
 
 

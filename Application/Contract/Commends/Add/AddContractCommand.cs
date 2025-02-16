@@ -13,9 +13,9 @@ namespace Application.Contract.Commends.Add
 
     public record CreateContractDto
     {
-        public DateOnly StartDate { get; set; }
-        public DateOnly EndDate { get; set; }
-        public DateOnly DateOfConclusion { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public DateTime DateOfConclusion { get; set; }
         public TimeOnly Duration { get; set; }
         public long Number { get; set; }
         public string Type { get; set; }

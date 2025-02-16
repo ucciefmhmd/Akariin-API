@@ -48,14 +48,17 @@ namespace Application.Services.File
                 throw;
             }
         }
+        
         public async Task DeleteFilesAsync(string Id)
         {
             string path = GetUploadDirectory(Id);
+
             if (Directory.Exists(path))
             {
                 await Task.Run(() => { Directory.Delete(path, true); });
             }
         }
+        
         public async Task<GetFilesResult> GetFilesUrlAsync(string Id)
         {
             var path = Path.Combine("wwwroot", GetUploadDirectory(Id));
@@ -74,7 +77,6 @@ namespace Application.Services.File
             return new GetFilesResult { IsSuccess = false };
         }
 
-
         public async Task<UploadFileResult> UploadFilesAsync(string Id, IFormFile file)
         {
             try
@@ -83,26 +85,79 @@ namespace Application.Services.File
 
                 if (file == null || file.Length == 0)
                     return new UploadFileResult() { ErrorCode = Domain.Common.ErrorCode.BadFile, Errors = { "Bad file" }, IsSuccess = false };
-                var filePath = Path.Combine("wwwroot", GetUploadDirectory(Id) +Guid.NewGuid().ToString() + "_" + file.FileName);
+                var filePath = Path.Combine("wwwroot", GetUploadDirectory(Id) + Guid.NewGuid().ToString() + "_" + file.FileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
                 }
 
-                results.Add(new UploadFile { Url=filePath,FileName= Path.GetFileName(filePath) } );
+                results.Add(new UploadFile { Url = filePath, FileName = Path.GetFileName(filePath) });
 
                 return new UploadFileResult() { IsSuccess = true, UploadFiles = results };
             }
-            catch(Exception error)
+            catch (Exception error)
             {
-                return new UploadFileResult() { 
+                return new UploadFileResult()
+                {
                     ErrorCode = Domain.Common.ErrorCode.Error,
-                    Errors = { error.Message},
-                    IsSuccess = false };
+                    Errors = { error.Message },
+                    IsSuccess = false
+                };
             }
 
         }
+
+        //public async Task<UploadFileResult> UploadFilesAsync(string Id, IFormFile file)
+        //{
+        //    try
+        //    {
+        //        if (file == null || file.Length == 0)
+        //        {
+        //            return new UploadFileResult()
+        //            {
+        //                ErrorCode = Domain.Common.ErrorCode.BadFile,
+        //                Errors = { "Invalid file." },
+        //                IsSuccess = false
+        //            };
+        //        }
+
+        //        // Generate a unique filename
+        //        string directoryPath = Path.Combine("wwwroot", "Uploads", Id);
+        //        string filePath = Path.Combine(directoryPath, file.FileName);
+
+        //        // Ensure the directory exists
+        //        if (!Directory.Exists(directoryPath))
+        //        {
+        //            Directory.CreateDirectory(directoryPath);
+        //        }
+
+        //        // Save the file
+        //        using (var stream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            await file.CopyToAsync(stream);
+        //        }
+
+        //        // Generate a web-accessible URL
+        //        string webUrl = $"/Uploads/profiles/{Guid.NewGuid()}/{file.FileName}";
+
+        //        return new UploadFileResult()
+        //        {
+        //            IsSuccess = true,
+        //            UploadFiles = new List<UploadFile> { new UploadFile { Url = webUrl, FileName = file.FileName } }
+        //        };
+        //    }
+        //    catch (Exception error)
+        //    {
+        //        return new UploadFileResult()
+        //        {
+        //            ErrorCode = Domain.Common.ErrorCode.Error,
+        //            Errors = { error.Message },
+        //            IsSuccess = false
+        //        };
+        //    }
+        //}
+
 
         public async Task DeleteFileAsync(string Url)
         {
@@ -113,6 +168,17 @@ namespace Application.Services.File
         }
 
         internal string GetUploadDirectory(string Id)
+        {
+            var dir = Path.GetFullPath(".\\wwwroot");
+            string dirPath = dir + @$"\\Uploads\\{Id.ToString()}\\";
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
+            return dirPath;
+        }
+
+        internal string GetUploadDirectory(Guid Id)
         {
             var dir = Path.GetFullPath(".\\wwwroot");
             string dirPath = dir + @$"\\Uploads\\{Id.ToString()}\\";

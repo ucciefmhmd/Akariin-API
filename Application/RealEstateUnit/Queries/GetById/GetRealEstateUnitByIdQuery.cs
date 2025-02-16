@@ -1,12 +1,11 @@
-﻿using Application.RealEstate.Queries.GetAllRealEstate;
-using Application.RealEstateUnit.Queries.GetAll;
+﻿using Application.RealEstateUnit.Queries.GetAll;
 using Application.Services.File;
 using Application.Utilities.Models;
 using Domain.Models.RealEstates;
 using Infrastructure;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Application.RealEstateUnit.Queries.GetById
 {
@@ -29,11 +28,17 @@ namespace Application.RealEstateUnit.Queries.GetById
         public string? WaterMeter { get; set; }
         public string? ElectricityCalculation { get; set; }
         public string? Image { get; set; }
-        public long TenantId { get; set; }
+        public string Status { get; set; }
+        public long? TenantId { get; set; }
         public long RealEstateId { get; set; }
+        public CreatedByVM CreatedBy { get; set; }
+        public CreatedByVM ModifiedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
 
     }
-    public class GetRealEstateUnitByIdQueryHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService) : IRequestHandler<GetRealEstateUnitByIdQuery, GetRealEstateUnitByIdQueryResult>
+
+    public class GetRealEstateUnitByIdQueryHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService, ILogger<GetRealEstateUnitByIdQueryHandler> _logger) : IRequestHandler<GetRealEstateUnitByIdQuery, GetRealEstateUnitByIdQueryResult>
     {
         public async Task<GetRealEstateUnitByIdQueryResult> Handle(GetRealEstateUnitByIdQuery request, CancellationToken cancellationToken)
         {
@@ -54,8 +59,13 @@ namespace Application.RealEstateUnit.Queries.GetById
                         ElectricityCalculation = re.ElectricityCalculation,
                         GasMeter = re.GasMeter,
                         WaterMeter = re.WaterMeter,
+                        Status = re.Status,
                         TenantId = re.TenantId,
-                        RealEstateId = re.RealEstateId
+                        RealEstateId = re.RealEstateId,
+                        CreatedBy = re.CreatedBy != null ? new CreatedByVM { Name = re.CreatedBy.Name, Id = re.CreatedBy.Id } : null,
+                        ModifiedBy = re.ModifiedBy != null ? new CreatedByVM { Name = re.ModifiedBy.Name, Id = re.ModifiedBy.Id } : null,
+                        CreatedDate = re.CreatedDate,
+                        ModifiedDate = re.ModifiedDate
                     })
                     .FirstOrDefaultAsync(cancellationToken);
 
@@ -68,10 +78,9 @@ namespace Application.RealEstateUnit.Queries.GetById
                     };
                 }
 
-                var url = "";
                 var profile = await _attachmentService.GetFilesUrlAsync(Path.Combine("profiles", realEstateUnit.Id.ToString()));
 
-                if (profile.IsSuccess && profile.Urls.Count > 0)
+                if (profile?.IsSuccess == true && profile.Urls?.Count > 0)
                 {
                     realEstateUnit.Image = profile.Urls[0];
                 }
@@ -84,6 +93,7 @@ namespace Application.RealEstateUnit.Queries.GetById
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error retrieving real estate unit by ID: {Id}", request.Id);
                 return new GetRealEstateUnitByIdQueryResult
                 {
                     IsSuccess = false,

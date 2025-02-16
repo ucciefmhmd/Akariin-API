@@ -15,7 +15,7 @@ namespace Application.Bill.Commends.Add
     public record CreateBillDto
     {
         public string Amount { get; set; }
-        public DateOnly Date { get; set; }
+        public DateTime Date { get; set; }
         public long Number { get; set; }
         public float Salary { get; set; }
         public float Discount { get; set; }

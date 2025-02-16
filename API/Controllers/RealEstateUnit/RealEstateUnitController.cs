@@ -4,7 +4,9 @@ using Application.RealEstateUnit.Commends.Update;
 using Application.RealEstateUnit.Queries.GetAll;
 using Application.RealEstateUnit.Queries.GetById;
 using Common;
+using Domain.Common.Constants;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.RealEstateUnit
@@ -14,7 +16,7 @@ namespace API.Controllers.RealEstateUnit
     [ApiExplorerSettings(GroupName = "RealEstateUnit")]
     public class RealEstateUnitController(IMediator _mediator) : ControllerBase
     {
-        [HttpPost("GetAllRealEstateUnit")]
+        [HttpPost("GetAll")]
         public async Task<ActionResult<GetAllRealEstateUnitQueryResult>> GetAll([FromBody] GetAllRealEstateUnitQuery query)
         {
             return await this.HandleCommandResult(_mediator.Send(query));
@@ -26,13 +28,14 @@ namespace API.Controllers.RealEstateUnit
             return await this.HandleCommandResult(_mediator.Send(new GetRealEstateUnitByIdQuery(id)));
         }
 
-        [HttpPost("AddRealEstateUnit")]
+        [HttpPost("Add")]
+        [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN},{Roles.USER}")]
         public async Task<ActionResult<AddRealEstateUnitCommendResult>> Add([FromForm] AddRealEstateUnitCommand command)
         {
-            return await this.HandleCommandResult(_mediator.Send(command));
+            return await this.HandleCommandResult(_mediator.Send(command)); 
         }
 
-        [HttpPut("UpdateRealEstateUnit")]
+        [HttpPut("Update")]
         public async Task<ActionResult<UpdateRealEstateUnitCommendResult>> Update([FromForm] UpdateRealEstateUnitCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));

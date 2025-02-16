@@ -14,27 +14,31 @@ namespace API.Controllers.Contract
     [ApiExplorerSettings(GroupName = "Contract")]
     public class ContractController(IMediator _mediator) : ControllerBase
     {
-        [HttpPost("GetAllContract")]
+        [HttpPost("GetAll")]
         public async Task<ActionResult<GetAllContractQueryResult>> GetAll([FromBody] GetAllContractQuery query)
         {
             return await this.HandleCommandResult(_mediator.Send(query));
         }
-        [HttpGet("{id:long}")]
+
+        [HttpGet("GetById/{id:long}")]
         public async Task<ActionResult<GetContractByIdQueryResult>> GetById(long id)
         {
             return await this.HandleCommandResult(_mediator.Send(new GetContractByIdQuery(id)));
         }
-        [HttpPost("AddContract")]
+
+        [HttpPost("Add")]
         public async Task<ActionResult<AddContractCommandResult>> Add([FromBody] AddContractCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }
-        [HttpPut("UpdateContract")]
+
+        [HttpPut("Update")]
         public async Task<ActionResult<UpdateContractCommandResult>> Update([FromBody] UpdateContractCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }
-        [HttpDelete("{id:long}")]
+
+        [HttpDelete("Delete/{id:long}")]
         public async Task<ActionResult<DeleteContractCommandResult>> Delete(long id)
         {
             return await this.HandleCommandResult(_mediator.Send(new DeleteContractCommand(id)));

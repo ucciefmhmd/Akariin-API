@@ -7,9 +7,11 @@ using Domain.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Duende.IdentityServer.Services;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Infrastructure.Interceptors;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -17,19 +19,18 @@ public static class ConfigureServices
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
                 sqlOptions => sqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
         services.AddScoped<ApplicationDbContextInitialiser>();
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
+
         services.AddDefaultIdentity<ApplicationUser>()
-            .AddRoles<IdentityRole>().AddRoleManager<RoleManager<IdentityRole>>()
-            .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
-
-
-        
+            .AddRoles<IdentityRole>()
+            .AddRoleManager<RoleManager<IdentityRole>>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
         services.Configure<IdentityOptions>(options =>
         {
@@ -39,6 +40,7 @@ public static class ConfigureServices
                options.Password.RequireLowercase =
                options.Password.RequireNonAlphanumeric =
                options.Password.RequireUppercase = false;
+
             // Lockout settings.
             options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
             options.Lockout.MaxFailedAccessAttempts = int.MaxValue;
@@ -46,93 +48,127 @@ public static class ConfigureServices
 
             // User settings.
             options.User.RequireUniqueEmail = true;
+            options.User.AllowedUserNameCharacters = null;
 
-            //sign in settings
+            // Sign-in settings.
             options.SignIn.RequireConfirmedEmail = true;
             options.SignIn.RequireConfirmedPhoneNumber = false;
-            options.User.AllowedUserNameCharacters = null;
-            options.User.RequireUniqueEmail = true;
         });
+
         services.Configure<SecurityStampValidatorOptions>(options =>
         {
-            // enables immediate logout, after updating the user's stat.
+            // Enables immediate logout after updating the user's security stamp.
             options.ValidationInterval = TimeSpan.Zero;
         });
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-
-            // Adding Jwt Bearer
-            .AddJwtBearer(options =>
+        .AddJwtBearer(options =>
+        {
+            options.SaveToken = false;
+            options.RequireHttpsMetadata = false;
+            options.TokenValidationParameters = new TokenValidationParameters()
             {
-                options.SaveToken = false;
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters()
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidAudience = configuration["JWT:Audience"],
+                ValidIssuer = configuration["JWT:Issuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"])),
+                ClockSkew = TimeSpan.Zero
+            };
+
+            options.Events = new JwtBearerEvents
+            {
+                OnTokenValidated = async context =>
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidAudience = configuration["JWT:Audience"],
-                    ValidIssuer = configuration["JWT:Issuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"])),
-                    ClockSkew = TimeSpan.Zero
-                };
-               
-                options.Events = new JwtBearerEvents
-                {
-                    OnTokenValidated = async context =>
+                    try
                     {
-                        var securityStampClaim = context.Principal.Claims.FirstOrDefault(c => c.Type == "uss")?.Value;
-                        var userId = context.Principal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
-                        var userService = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
-                        var user = await userService.FindByIdAsync(userId);
-                        var userSecurityStamp = string.Empty;
-                        if (user == null)
-                        {
-                            context.Fail("user not found");
-                        }
-                        else
-                        {
-                            userSecurityStamp = user.SecurityStamp;
+                        var userIdClaim = context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+                        var securityStampClaim = context.Principal?.FindFirst("uss")?.Value;
 
+                        if (string.IsNullOrEmpty(userIdClaim) || string.IsNullOrEmpty(securityStampClaim))
+                        {
+                            context.Fail("Invalid token: Missing required claims.");
+                            return;
                         }
 
+                        var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+                        var user = await userManager.FindByIdAsync(userIdClaim);
 
-                        // Compare the security stamp from the JWT with the one from the database
-                        if (securityStampClaim != userSecurityStamp)
+                        if (user == null || user.SecurityStamp != securityStampClaim)
                         {
-                            // Token is considered invalid
-                            context.Fail("Security stamp mismatch");
+                            context.Fail("Security stamp mismatch or user not found.");
                         }
-
-                    },
-                    OnMessageReceived = context =>
-                    {
-                        // Look for the access token in the query string for SignalR connections
-
-                        var accessToken = context.Request.Query["token"];
-
-                        // If the request is for the SignalR hub, set the token
-                        var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/chathub")))
-                        {
-                            context.Token = accessToken;
-                        }
-                        //context.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6IjZkMDg1OWJkLWJmMzUtNGI3OC05ZDcwLWU4YWZmOWNmNmFhMiIsImVtYWlsIjoiYWRtaW5AbG9jYWxob3N0IiwidXNzIjoiWjNFV0I1QlRZWU4zNzIzQllJTTQ1Q0RQS09VTEc1UkQiLCJyb2xlcyI6WyJDb21wYW55IiwiQWRtaW4iLCJVc2VyUHJvIiwiVXNlciJdLCJleHAiOjE3NDUwODA2MTIsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0IiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3QifQ.WDHEMEJGkl-REGW3O7wqidTiMDnbI701YXuckNOVtDw";
-                        return Task.CompletedTask;
                     }
-                };
-            });
+                    catch (Exception ex)
+                    {
+                        context.Fail($"Token validation failed: {ex.Message}");
+                    }
+                },
+
+                OnChallenge = context =>
+                {
+                    context.HandleResponse();
+                    context.Response.StatusCode = 401;
+                    context.Response.ContentType = "application/json";
+                    var result = System.Text.Json.JsonSerializer.Serialize(new { message = "Unauthorized - Token is invalid or expired" });
+                    return context.Response.WriteAsync(result);
+                },
+
+                OnMessageReceived = context =>
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<JwtBearerEvents>>();
+
+                    // Extract token from query string
+                    var accessToken = context.Request.Query["token"];
+
+                    // If not found in query, check the Authorization header
+                    if (string.IsNullOrEmpty(accessToken))
+                    {
+                        var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+                        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
+                        {
+                            accessToken = authHeader.Substring("Bearer ".Length).Trim();
+                        }
+                    }
+
+                    //// If not found in query, check the Authorization header
+                    //if (string.IsNullOrEmpty(accessToken))
+                    //{
+                    //    var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+
+                    //    if (!string.IsNullOrEmpty(authHeader))
+                    //    {
+                    //        accessToken = authHeader;
+                    //    }
+                    //}
+
+                    // Log received token
+                    if (string.IsNullOrEmpty(accessToken))
+                    {
+                        logger.LogWarning("❌ No access token received in query string or Authorization header.");
+                    }
+                    else
+                    {
+                        logger.LogInformation($"✅ Token received: {accessToken}");
+                    }
+
+                    context.Token = accessToken;
+                    return Task.CompletedTask;
+                }
+
+            };
+        });
 
         services.Configure<DataProtectionTokenProviderOptions>(o => o.TokenLifespan = TimeSpan.FromMinutes(15));
 
-        services.AddAuthentication().AddIdentityServerJwt();
         services.AddAuthorization();
 
-        
         return services;
     }
 }

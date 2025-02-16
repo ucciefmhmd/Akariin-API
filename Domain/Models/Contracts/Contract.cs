@@ -7,13 +7,13 @@ namespace Domain.Models.Contracts
 {
     public class Contract : ModelBase<long>
     {
-        public DateOnly StartDate { get; set; }
-        public DateOnly EndDate { get; set; }
-        public DateOnly DateOfConclusion { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public DateTime DateOfConclusion { get; set; }
         public TimeOnly Duration { get; set; }
         public long Number { get; set; }
         public string Type { get; set; }
-        public string TerminationMethod { get; set; }
+        public string TerminationMethod { get   ; set; }
 
         // Foreign Keys
         [ForeignKey(nameof(RealEstateUnit))]

@@ -7,29 +7,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.RealEstateUnit.Commends.Update
 {
-    public record UpdateRealEstateUnitCommand(UpdateRealEstateUnitDto dto) : IRequest<UpdateRealEstateUnitCommendResult>;
+    public record UpdateRealEstateUnitCommand(long Id, string AnnualRent, string Area, string Floor, string UnitNumber, string NumOfRooms, string Type, string? GasMeter, string? WaterMeter, string? ElectricityCalculation, string Status, IFormFile? Image, long? TenantId, long RealEstateId) : IRequest<UpdateRealEstateUnitCommendResult>;
 
     public record UpdateRealEstateUnitCommendResult : BaseCommandResult
     {
         public long Id { get; init; }
-    }
-
-    public record UpdateRealEstateUnitDto
-    {
-        public long Id { get; set; }
-        public string AnnualRent { get; set; }
-        public string Area { get; set; }
-        public string Floor { get; set; }
-        public string UnitNumber { get; set; }
-        public string NumOfRooms { get; set; }
-        public string Type { get; set; }
-        public string? GasMeter { get; set; }
-        public string? WaterMeter { get; set; }
-        public string? ElectricityCalculation { get; set; }
-        public IFormFile? Image { get; set; }
-        public long TenantId { get; set; }
-        public long RealEstateId { get; set; }
-
     }
 
     public class UpdateRealEstateUnitCommendHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService) : IRequestHandler<UpdateRealEstateUnitCommand, UpdateRealEstateUnitCommendResult>
@@ -38,33 +20,42 @@ namespace Application.RealEstateUnit.Commends.Update
         {
             try
             {
-                var realEstateUnit = await _dbContext.RealEstateUnits.FindAsync(new object[] { request.dto.Id }, cancellationToken);
+                var realEstateUnit = await _dbContext.RealEstateUnits.FindAsync(new object[] { request.Id }, cancellationToken);
 
                 if (realEstateUnit == null)
                 {
                     return new UpdateRealEstateUnitCommendResult
                     {
                         IsSuccess = false,
-                        Id = request.dto.Id,
+                        Id = request.Id,
                         Errors = { "Real estate unit not found." }
                     };
                 }
 
-                realEstateUnit.Id = request.dto.Id;
-                realEstateUnit.AnnualRent = request.dto.AnnualRent;
-                realEstateUnit.Area = request.dto.Area;
-                realEstateUnit.Floor = request.dto.Floor;
-                realEstateUnit.NumOfRooms = request.dto.NumOfRooms;
-                realEstateUnit.Type = request.dto.Type;
-                realEstateUnit.UnitNumber = request.dto.UnitNumber;
-                realEstateUnit.TenantId = request.dto.TenantId;
-                realEstateUnit.WaterMeter = request.dto.WaterMeter;
-                realEstateUnit.RealEstateId = request.dto.RealEstateId;
-                realEstateUnit.GasMeter = request.dto.GasMeter;
-                realEstateUnit.ElectricityCalculation = request.dto.ElectricityCalculation;
-                if (request.dto.Image is not null)
+                realEstateUnit.Id = request.Id;
+                realEstateUnit.AnnualRent = request.AnnualRent;
+                realEstateUnit.Area = request.Area;
+                realEstateUnit.Floor = request.Floor;
+                realEstateUnit.NumOfRooms = request.NumOfRooms;
+                realEstateUnit.Type = request.Type;
+                realEstateUnit.UnitNumber = request.UnitNumber;
+                realEstateUnit.TenantId = request.TenantId;
+                realEstateUnit.WaterMeter = request.WaterMeter;
+                realEstateUnit.RealEstateId = request.RealEstateId;
+                realEstateUnit.GasMeter = request.GasMeter;
+                realEstateUnit.ElectricityCalculation = request.ElectricityCalculation;
+                realEstateUnit.Status = request.Status;
+                if (request.Image is not null)
                 {
-                    await _attachmentService.UploadFilesAsync(Path.Combine("profiles", request.dto.Id.ToString()), request.dto.Image);
+                    // Delete old image if it exists
+                    if (!string.IsNullOrEmpty(realEstateUnit.Image))
+                    {
+                        await _attachmentService.DeleteFilesAsync(realEstateUnit.Id.ToString());
+                    }
+
+                    // Upload new image
+                    await _attachmentService.UploadFilesAsync(Path.Combine("profiles", request.Id.ToString()), request.Image);
+
                 }
 
                 var validationResults = new List<ValidationResult>();

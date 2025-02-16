@@ -1,7 +1,5 @@
-﻿using Application.Bill.Commends.Add;
-using Application.Bill.Queries.GetAll;
+﻿using Application.Bill.Queries.GetAll;
 using Application.Utilities.Models;
-using Domain.Models.Bills;
 using Infrastructure;
 using MediatR;
 using System.ComponentModel.DataAnnotations;

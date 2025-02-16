@@ -1,4 +1,5 @@
 ﻿using Application.Owner.Queries.GetAll;
+using Application.RealEstateUnit.Queries.GetAll;
 using Application.Utilities.Models;
 using Infrastructure;
 using MediatR;
@@ -10,7 +11,7 @@ namespace Application.Owner.Queries.GetById
 
     public record GetOwnerByIdQueryResult : BaseCommandResult
     {
-        public OwnerDto? OwnerDtos { get; set; }
+        public OwnerDto? dto { get; set; }
     }
 
     public class GetOwnerByIdQueryHandler(ApplicationDbContext _dbContext) : IRequestHandler<GetOwnerByIdQuery, GetOwnerByIdQueryResult>
@@ -28,9 +29,13 @@ namespace Application.Owner.Queries.GetById
                         City = o.City,
                         Address = o.Address,
                         PhoneNumber = o.PhoneNumber,
-                        Birthday = o.Birthday,
                         Gender = o.Gender,
-                        Nationality = o.Nationality
+                        Nationality = o.Nationality,
+                        Role = o.Role,
+                        CreatedBy = o.CreatedBy != null ? new CreatedByVM { Name = o.CreatedBy.Name, Id = o.CreatedBy.Id } : null,
+                        ModifiedBy = o.ModifiedBy != null ? new CreatedByVM { Name = o.ModifiedBy.Name, Id = o.ModifiedBy.Id } : null,
+                        CreatedDate = o.CreatedDate,
+                        ModifiedDate = o.ModifiedDate
                     }).FirstOrDefaultAsync(cancellationToken);
 
                 if(_owner == null)
@@ -45,7 +50,7 @@ namespace Application.Owner.Queries.GetById
                 return new GetOwnerByIdQueryResult
                 {
                     IsSuccess = true,
-                    OwnerDtos = _owner
+                    dto = _owner
                 };
 
             }

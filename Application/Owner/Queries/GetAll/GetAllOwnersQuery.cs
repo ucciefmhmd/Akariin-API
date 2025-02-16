@@ -1,4 +1,5 @@
-﻿using Application.Utilities.Extensions;
+﻿using Application.RealEstateUnit.Queries.GetAll;
+using Application.Utilities.Extensions;
 using Application.Utilities.Filter;
 using Application.Utilities.Models;
 using Application.Utilities.Sort;
@@ -7,11 +8,15 @@ using MediatR;
 
 namespace Application.Owner.Queries.GetAll
 {
-    public record GetAllOwnersQuery : BasePaginatedQuery, IRequest<GetAllOwnersQueryResult>;
+    public record GetAllOwnersQuery : BasePaginatedQuery, IRequest<GetAllOwnersQueryResult> 
+    {
+        public string? UserId { get; set; }
+    }
+
 
     public record GetAllOwnersQueryResult : BaseCommandResult
     {
-        public BasePaginatedList<OwnerDto> OwnerDtos { get; set; }
+        public BasePaginatedList<OwnerDto> dto { get; set; }
     }
     public record OwnerDto
     {
@@ -21,9 +26,12 @@ namespace Application.Owner.Queries.GetAll
         public string? Address { get; set; }
         public string PhoneNumber { get; set; }
         public string? Gender { get; set; }
-        public DateOnly? Birthday { get; set; }
         public string? Nationality { get; set; }
         public string Role { get; set; }
+        public CreatedByVM CreatedBy { get; set; }
+        public CreatedByVM ModifiedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
     }
     public class GetAllOwnersQueryHandler(ApplicationDbContext _dbContext) : IRequestHandler<GetAllOwnersQuery, GetAllOwnersQueryResult>
     {
@@ -33,6 +41,7 @@ namespace Application.Owner.Queries.GetAll
             {
                 var _owners = await _dbContext.Owners
                     .Search(request.SearchTerm)
+                    .Where(i => i.CreatedById == request.UserId || request.UserId == null)
                     .Select(o => new OwnerDto
                     {
                         Id = o.Id,
@@ -41,9 +50,12 @@ namespace Application.Owner.Queries.GetAll
                         Address = o.Address,
                         PhoneNumber = o.PhoneNumber,
                         Gender = o.Gender,
-                        Birthday = o.Birthday,
                         Nationality = o.Nationality,
-                        Role = o.Role
+                        Role = o.Role,
+                        CreatedBy = o.CreatedBy != null ? new CreatedByVM { Name = o.CreatedBy.Name, Id = o.CreatedBy.Id } : null,
+                        ModifiedBy = o.ModifiedBy != null ? new CreatedByVM { Name = o.ModifiedBy.Name, Id = o.ModifiedBy.Id } : null,
+                        CreatedDate = o.CreatedDate,
+                        ModifiedDate = o.ModifiedDate
                     })
                     .Filter(request.Filters)
                     .Sort(request.Sorts ?? new List<SortedQuery>() { new SortedQuery() { PropertyName = "Name", Direction = SortDirection.ASC } })
@@ -52,7 +64,7 @@ namespace Application.Owner.Queries.GetAll
                 return new GetAllOwnersQueryResult
                 {
                     IsSuccess = true,
-                    OwnerDtos = _owners
+                    dto = _owners
                 };
             }
             catch (Exception ex)
