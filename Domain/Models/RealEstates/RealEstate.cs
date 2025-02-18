@@ -1,7 +1,7 @@
 ﻿using Domain.Contractors;
-using Domain.Models.Owners;
+using Domain.Models.Contracts;
+using Domain.Models.Members;
 using Domain.Models.RealEstateUnits;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Models.RealEstates
 {
@@ -26,13 +26,12 @@ namespace Domain.Models.RealEstates
         public string? WaterMeter { get; set; }
         public string? Image { get; set; }
         public string Status { get; set; }
-
-        [ForeignKey("Owner")]
         public long OwnerId { get; set; }
 
         // Navigation property
-        public virtual Owner Owner { get; set; }
+        public virtual Member Owner { get; set; }
         public virtual ICollection<RealEstateUnit> RealEstateUnits { get; set; } = new HashSet<RealEstateUnit>();
+        public virtual ICollection<Contract> Contracts { get; set; } = new HashSet<Contract>();
     }
 
 }

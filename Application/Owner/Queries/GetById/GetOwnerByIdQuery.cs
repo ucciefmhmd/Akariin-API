@@ -7,22 +7,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Queries.GetById
 {
-    public record GetOwnerByIdQuery(long id) : IRequest<GetOwnerByIdQueryResult>;
+    public record GetMemberByIdQuery(long id) : IRequest<GetMemberByIdQueryResult>;
 
-    public record GetOwnerByIdQueryResult : BaseCommandResult
+    public record GetMemberByIdQueryResult : BaseCommandResult
     {
-        public OwnerDto? dto { get; set; }
+        public MemberDto? dto { get; set; }
     }
 
-    public class GetOwnerByIdQueryHandler(ApplicationDbContext _dbContext) : IRequestHandler<GetOwnerByIdQuery, GetOwnerByIdQueryResult>
+    public class GetMemberByIdQueryHandler(ApplicationDbContext _dbContext) : IRequestHandler<GetMemberByIdQuery, GetMemberByIdQueryResult>
     {
-        public async Task<GetOwnerByIdQueryResult> Handle(GetOwnerByIdQuery request, CancellationToken cancellationToken)
+        public async Task<GetMemberByIdQueryResult> Handle(GetMemberByIdQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                var _owner = await _dbContext.Owners
+                var _owner = await _dbContext.Members
                     .Where(o => o.Id == request.id)
-                    .Select(o => new OwnerDto
+                    .Select(o => new MemberDto
                     {
                         Id = o.Id,
                         Name = o.Name,
@@ -40,14 +40,14 @@ namespace Application.Owner.Queries.GetById
 
                 if(_owner == null)
                 {
-                    return new GetOwnerByIdQueryResult
+                    return new GetMemberByIdQueryResult
                     {
                         IsSuccess = false,
-                        Errors = { "Owner not found." }
+                        Errors = { "Member not found." }
                     };
                 }
 
-                return new GetOwnerByIdQueryResult
+                return new GetMemberByIdQueryResult
                 {
                     IsSuccess = true,
                     dto = _owner
@@ -56,7 +56,7 @@ namespace Application.Owner.Queries.GetById
             }
             catch (Exception ex)
             {
-                return new GetOwnerByIdQueryResult
+                return new GetMemberByIdQueryResult
                 {
                     IsSuccess = false,
                     Errors = { ex.Message },

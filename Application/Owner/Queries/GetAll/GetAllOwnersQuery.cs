@@ -8,17 +8,17 @@ using MediatR;
 
 namespace Application.Owner.Queries.GetAll
 {
-    public record GetAllOwnersQuery : BasePaginatedQuery, IRequest<GetAllOwnersQueryResult> 
+    public record GetAllMembersQuery : BasePaginatedQuery, IRequest<GetAllMembersQueryResult> 
     {
         public string? UserId { get; set; }
     }
 
 
-    public record GetAllOwnersQueryResult : BaseCommandResult
+    public record GetAllMembersQueryResult : BaseCommandResult
     {
-        public BasePaginatedList<OwnerDto> dto { get; set; }
+        public BasePaginatedList<MemberDto> dto { get; set; }
     }
-    public record OwnerDto
+    public record MemberDto
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -33,16 +33,16 @@ namespace Application.Owner.Queries.GetAll
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
     }
-    public class GetAllOwnersQueryHandler(ApplicationDbContext _dbContext) : IRequestHandler<GetAllOwnersQuery, GetAllOwnersQueryResult>
+    public class GetAllMembersQueryHandler(ApplicationDbContext _dbContext) : IRequestHandler<GetAllMembersQuery, GetAllMembersQueryResult>
     {
-        public async Task<GetAllOwnersQueryResult> Handle(GetAllOwnersQuery request, CancellationToken cancellationToken)
+        public async Task<GetAllMembersQueryResult> Handle(GetAllMembersQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                var _owners = await _dbContext.Owners
+                var _owners = await _dbContext.Members
                     .Search(request.SearchTerm)
                     .Where(i => i.CreatedById == request.UserId || request.UserId == null)
-                    .Select(o => new OwnerDto
+                    .Select(o => new MemberDto
                     {
                         Id = o.Id,
                         Name = o.Name,
@@ -61,7 +61,7 @@ namespace Application.Owner.Queries.GetAll
                     .Sort(request.Sorts ?? new List<SortedQuery>() { new SortedQuery() { PropertyName = "Name", Direction = SortDirection.ASC } })
                     .ToPaginatedListAsync(request.PageNumber, request.PageSize);
 
-                return new GetAllOwnersQueryResult
+                return new GetAllMembersQueryResult
                 {
                     IsSuccess = true,
                     dto = _owners
@@ -69,7 +69,7 @@ namespace Application.Owner.Queries.GetAll
             }
             catch (Exception ex)
             {
-                return new GetAllOwnersQueryResult
+                return new GetAllMembersQueryResult
                 {
                     IsSuccess = false,
                     Errors = { ex.Message },

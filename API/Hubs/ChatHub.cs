@@ -19,6 +19,7 @@ namespace API.Hubs
         //public override async Task OnConnectedAsync()
         //{
         //    var receiverId = Context.GetHttpContext().Request.Query["receiverId"].ToString();
+
         //    var userId = Context.User?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
 
         //    var claims = Context.User.Claims;

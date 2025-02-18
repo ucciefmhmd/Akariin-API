@@ -14,7 +14,7 @@ namespace Application.RealEstate.Commends.AddRealEstate
         public long Id { get; set; }
     }
 
-    public class AddRealEstateCommandHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService, IHttpContextAccessor _httpContextAccessor) : IRequestHandler<AddRealEstateCommand, AddRealEstateCommandResult>
+    public class AddRealEstateCommandHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService) : IRequestHandler<AddRealEstateCommand, AddRealEstateCommandResult>
     {
         public async Task<AddRealEstateCommandResult> Handle(AddRealEstateCommand request, CancellationToken cancellationToken)
         {

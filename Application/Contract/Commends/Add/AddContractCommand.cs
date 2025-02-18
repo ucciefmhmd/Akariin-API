@@ -1,30 +1,19 @@
-﻿using Application.Utilities.Models;
+﻿using Application.Services.File;
+using Application.Utilities.Models;
 using Infrastructure;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Contract.Commends.Add
 {
-    public record AddContractCommand(CreateContractDto dto) : IRequest<AddContractCommandResult>;
+    public record AddContractCommand(string ContractNumber, string PaymentCycle, string AutomaticRenewal, string ContractRent, DateTime DateOfConclusion, DateTime StartDate, DateTime EndDate, string Type, decimal? TenantTax, string Status, IFormFile? ContractFile, bool IsActive, bool IsExecute, bool IsFinished, long RealEstateUnitId, long RealEstateId, long TenantId) : IRequest<AddContractCommandResult>;
     
     public record AddContractCommandResult : BaseCommandResult
     {
         public long Id { get; set; }
     }
 
-    public record CreateContractDto
-    {
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public DateTime DateOfConclusion { get; set; }
-        public TimeOnly Duration { get; set; }
-        public long Number { get; set; }
-        public string Type { get; set; }
-        public string TerminationMethod { get; set; }
-        public long RealEstateUnitId { get; set; }
-        public long TenantId { get; set; }
-    }
-
-    public class AddContractCommandHandler(ApplicationDbContext _dbContext) : IRequestHandler<AddContractCommand, AddContractCommandResult>
+    public class AddContractCommandHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService) : IRequestHandler<AddContractCommand, AddContractCommandResult>
     {
         public async Task<AddContractCommandResult> Handle(AddContractCommand request, CancellationToken cancellationToken)
         {
@@ -32,20 +21,34 @@ namespace Application.Contract.Commends.Add
             {
                 var contract = new Domain.Models.Contracts.Contract
                 {
-                    StartDate = request.dto.StartDate,
-                    EndDate = request.dto.EndDate,
-                    DateOfConclusion = request.dto.DateOfConclusion,
-                    Duration = request.dto.Duration,
-                    Number = request.dto.Number,
-                    Type = request.dto.Type,
-                    TerminationMethod = request.dto.TerminationMethod,
-                    RealEstateUnitId = request.dto.RealEstateUnitId,
-                    TenantId = request.dto.TenantId
+                    StartDate = request.StartDate,
+                    EndDate = request.EndDate,
+                    DateOfConclusion = request.DateOfConclusion,
+                    Type = request.Type,
+                    ContractNumber = request.ContractNumber,
+                    ContractRent = request.ContractRent,
+                    PaymentCycle = request.PaymentCycle,
+                    Status = request.Status,
+                    TenantTax = request.TenantTax,
+                    IsActive = request.IsActive,
+                    IsExecute = request.IsExecute,
+                    IsFinished = request.IsFinished,
+                    RealEstateId = request.RealEstateId,
+                    AutomaticRenewal = request.AutomaticRenewal,
+                    RealEstateUnitId = request.RealEstateUnitId,
+                    TenantId = request.TenantId
                 };
 
                 await _dbContext.Contracts.AddAsync(contract, cancellationToken);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
+
+                // Upload the image if provided
+                if (request.ContractFile is not null)
+                {
+                    // Upload new image
+                    await _attachmentService.UploadFilesAsync(Path.Combine("Contracts", contract.Id.ToString()), request.ContractFile);
+                }
 
                 return new AddContractCommandResult
                 {

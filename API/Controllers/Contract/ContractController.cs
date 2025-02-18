@@ -27,13 +27,13 @@ namespace API.Controllers.Contract
         }
 
         [HttpPost("Add")]
-        public async Task<ActionResult<AddContractCommandResult>> Add([FromBody] AddContractCommand command)
+        public async Task<ActionResult<AddContractCommandResult>> Add([FromForm] AddContractCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }
 
         [HttpPut("Update")]
-        public async Task<ActionResult<UpdateContractCommandResult>> Update([FromBody] UpdateContractCommand command)
+        public async Task<ActionResult<UpdateContractCommandResult>> Update([FromForm] UpdateContractCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }

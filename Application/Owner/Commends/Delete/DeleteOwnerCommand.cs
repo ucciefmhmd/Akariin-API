@@ -5,23 +5,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Commends.Delete
 {
-    public record DeleteOwnerCommand(long Id) : IRequest<DeleteOwnerCommandResult>;
+    public record DeleteMemberCommand(long Id) : IRequest<DeleteMemberCommandResult>;
 
-    public record DeleteOwnerCommandResult : BaseCommandResult
+    public record DeleteMemberCommandResult : BaseCommandResult
     {
     }
-    public class DeleteOwnerCommandHandler(ApplicationDbContext _dbContext) : IRequestHandler<DeleteOwnerCommand, DeleteOwnerCommandResult>
+    public class DeleteMemberCommandHandler(ApplicationDbContext _dbContext) : IRequestHandler<DeleteMemberCommand, DeleteMemberCommandResult>
     {
-        public async Task<DeleteOwnerCommandResult> Handle(DeleteOwnerCommand request, CancellationToken cancellationToken)
+        public async Task<DeleteMemberCommandResult> Handle(DeleteMemberCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var owner = await _dbContext.Owners
+                var member = await _dbContext.Members
                     .FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken);
 
-                if (owner == null)
+                if (member == null)
                 {
-                    return new DeleteOwnerCommandResult
+                    return new DeleteMemberCommandResult
                     {
                         IsSuccess = false,
                         Errors = new List<string> { "Owner not found" },
@@ -29,17 +29,17 @@ namespace Application.Owner.Commends.Delete
                     };
                 }
 
-                _dbContext.Owners.Remove(owner);
+                _dbContext.Members.Remove(member);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                return new DeleteOwnerCommandResult
+                return new DeleteMemberCommandResult
                 {
                     IsSuccess = true
                 };
             }
             catch (Exception ex)
             {
-                return new DeleteOwnerCommandResult
+                return new DeleteMemberCommandResult
                 {
                     IsSuccess = false,
                     Errors = { ex.Message },

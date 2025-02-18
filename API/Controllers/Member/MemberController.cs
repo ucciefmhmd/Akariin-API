@@ -11,37 +11,37 @@ namespace API.Controllers.Owner
 {
     [Route("api/[controller]")]
     [ApiController]
-    [ApiExplorerSettings(GroupName = "Owner")]
-    public class OwnerController(IMediator _mediator) : ControllerBase
+    [ApiExplorerSettings(GroupName = "Member")]
+    public class MemberController(IMediator _mediator) : ControllerBase
     {
         [HttpPost("GetAll")]
-        public async Task<ActionResult<GetAllOwnersQueryResult>> GetAll([FromBody] GetAllOwnersQuery query)
+        public async Task<ActionResult<GetAllMembersQueryResult>> GetAll([FromBody] GetAllMembersQuery query)
         {
             return await this.HandleCommandResult(_mediator.Send(query));
         }
 
         [HttpGet("GetById/{id:long}")]
-        public async Task<ActionResult<GetOwnerByIdQueryResult>> GetById(long id)
+        public async Task<ActionResult<GetMemberByIdQueryResult>> GetById(long id)
         {
-            return await this.HandleCommandResult(_mediator.Send(new GetOwnerByIdQuery(id)));
+            return await this.HandleCommandResult(_mediator.Send(new GetMemberByIdQuery(id)));
         }
 
         [HttpPost("Add")]
-        public async Task<ActionResult<AddOwnerCommandResult>> Add([FromBody] AddOwnerCommand command)
+        public async Task<ActionResult<AddMemberCommandResult>> Add([FromBody] AddMemberCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }
 
         [HttpPut("Update")]
-        public async Task<ActionResult<UpdateOwnerCommandResult>> Update([FromBody] UpdateOwnerCommand command)
+        public async Task<ActionResult<UpdateMemberCommandResult>> Update([FromBody] UpdateMemberCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }
 
         [HttpDelete("Delete/{id:long}")]
-        public async Task<ActionResult<DeleteOwnerCommandResult>> Delete(long id)
+        public async Task<ActionResult<DeleteMemberCommandResult>> Delete(long id)
         {
-            return await this.HandleCommandResult(_mediator.Send(new DeleteOwnerCommand(id)));
+            return await this.HandleCommandResult(_mediator.Send(new DeleteMemberCommand(id)));
         }
     }
 }

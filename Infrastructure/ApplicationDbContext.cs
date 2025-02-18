@@ -6,13 +6,13 @@ using Infrastructure.Common.Extensions;
 using Infrastructure.Interceptors;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Duende.IdentityServer.EntityFramework.Options;
-using Domain.Models.Owners;
 using Domain.Models.RealEstates;
 using Domain.Models.RealEstateUnits;
-using Domain.Models.Tenants;
 using Domain.Models.Bills;
 using Domain.Models.Contracts;
 using Domain.Models.RoleSysem;
+using Domain.Models.Members;
+using Domain.Models.Tenants;
 
 
 namespace Infrastructure;
@@ -31,28 +31,53 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-
         modelBuilder.CheckForTrim();
-
         base.OnModelCreating(modelBuilder);
 
+        // Configure RealEstateUnit with cascade delete
         modelBuilder.Entity<Contract>()
             .HasOne(c => c.RealEstateUnit)
             .WithMany()
             .HasForeignKey(c => c.RealEstateUnitId)
-            .OnDelete(DeleteBehavior.Cascade); // Allow cascade delete here
+            .OnDelete(DeleteBehavior.Restrict);
 
-        // Configure Tenant relationship with restrict delete
+        // Configure RealEstate with no action on delete
+        modelBuilder.Entity<Contract>()
+            .HasOne(c => c.RealEstate)
+            .WithMany()
+            .HasForeignKey(c => c.RealEstateId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // Configure Owner relationship
+        modelBuilder.Entity<RealEstate>()
+            .HasOne(c => c.Owner)
+            .WithMany(p => p.OwnerRealEstate)
+            .HasForeignKey(c => c.OwnerId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Configure Tenant relationship
+        modelBuilder.Entity<RealEstateUnit>()
+            .HasOne(c => c.Tenant)
+            .WithMany(p => p.TanentRealEstateUnit)
+            .HasForeignKey(c => c.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Correct Marketer relationship with restrict delete
+        modelBuilder.Entity<Contract>()
+            .HasOne(c => c.Marketer)
+            .WithMany(p => p.MarketerContract)
+            .HasForeignKey(c => c.MarketerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Correct Tenant relationship with restrict delete
         modelBuilder.Entity<Contract>()
             .HasOne(c => c.Tenant)
-            .WithMany()
+            .WithMany(p => p.TanentContract)
             .HasForeignKey(c => c.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
     }
-    
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.EnableSensitiveDataLogging();
@@ -66,7 +91,9 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
         return await base.SaveChangesAsync(cancellationToken);
     }
 
-    public DbSet<Owner> Owners { get; set; }
+    //public DbSet<Owner> Owners { get; set; }
+
+    public DbSet<Member> Members { get; set; }
 
     public DbSet<RealEstate> RealEstates { get; set; }
 

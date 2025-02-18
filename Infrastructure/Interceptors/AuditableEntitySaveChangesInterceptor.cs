@@ -8,35 +8,94 @@ using System.Security.Claims;
 
 namespace Infrastructure.Interceptors;
 
-public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
+public class AuditableEntitySaveChangesInterceptor(IHttpContextAccessor _httpContext) : SaveChangesInterceptor
 {
-    private readonly IHttpContextAccessor _httpContext;
-
-    public AuditableEntitySaveChangesInterceptor(IHttpContextAccessor httpContext)
-    {
-        _httpContext = httpContext;
-    }
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
-        UpdateEntities(eventData.Context);
+        HandleEntityUpdates(eventData.Context);
 
         return base.SavingChanges(eventData, result);
     }
 
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
-        UpdateEntities(eventData.Context);
+        HandleEntityUpdates(eventData.Context);
+
+        //UpdateEntities(eventData.Context);
 
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
-    public void UpdateEntities(DbContext? context)
+    private void HandleEntityUpdates(DbContext? context)
     {
         if (context == null) return;
 
-        var userId = _httpContext.HttpContext?.User?.FindFirstValue(JwtRegisteredClaimNames.Jti);
+        var httpContext = _httpContext.HttpContext;
 
-        foreach (var entry in context.ChangeTracker.Entries().Where(e => e.Entity is ModelBase<long> || e.Entity is ModelBase<Guid>))
+        var user = httpContext?.User;
+
+        var userId = user?.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+        if (user == null || string.IsNullOrEmpty(userId)) return;
+
+        bool isAdmin = user.IsInRole("Admin") || user.IsInRole("SubAdmin");
+
+        // Check if any entity being tracked contains a UserId property
+        bool containsUserId = context.ChangeTracker.Entries()
+                                                   .Any(e =>
+                                                       e.Entity?.GetType().GetProperty("UserId") != null &&
+                                                       e.Entity.GetType().GetProperty("UserId").GetValue(e.Entity) != null);
+
+        // If user is Admin and request contains UserId, skip updating entities
+        if (isAdmin && containsUserId) return;
+
+        UpdateEntities(context, userId);
+    }
+
+    //public void UpdateEntities(DbContext? context)
+    //{
+    //    if (context == null) return;
+
+    //    var userId = _httpContext.HttpContext?.User?.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+    //    foreach (var entry in context.ChangeTracker.Entries().Where(e => e.Entity is ModelBase<long> || e.Entity is ModelBase<Guid>))
+    //    {
+    //        if (entry.Entity is ModelBase<long> longEntity)
+    //        {
+    //            if (entry.State == EntityState.Added)
+    //            {
+    //                longEntity.CreatedById = userId;
+    //                longEntity.CreatedDate = DateTime.UtcNow;
+    //            }
+
+    //            if (entry.State == EntityState.Modified || entry.HasChangedOwnedEntities())
+    //            {
+    //                longEntity.ModifiedById = userId;
+    //                longEntity.ModifiedDate = DateTime.UtcNow;
+    //            }
+    //        }
+    //        else if (entry.Entity is ModelBase<Guid> guidEntity)
+    //        {
+    //            if (entry.State == EntityState.Added)
+    //            {
+    //                guidEntity.CreatedById = userId;
+    //                guidEntity.CreatedDate = DateTime.UtcNow;
+    //            }
+
+    //            if (entry.State == EntityState.Modified || entry.HasChangedOwnedEntities())
+    //            {
+    //                guidEntity.ModifiedById = userId;
+    //                guidEntity.ModifiedDate = DateTime.UtcNow;
+    //            }
+    //        }
+    //    }
+
+    //}
+
+
+    private void UpdateEntities(DbContext context, string userId)
+    {
+        foreach (var entry in context.ChangeTracker.Entries())
         {
             if (entry.Entity is ModelBase<long> longEntity)
             {

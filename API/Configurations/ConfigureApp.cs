@@ -23,11 +23,11 @@ namespace Configurations
             {
                 c.SwaggerEndpoint("/swagger/RealEstate/swagger.json", "Real Estate API v1");
                 c.SwaggerEndpoint("/swagger/Common/swagger.json", "Common API v1");
-                c.SwaggerEndpoint("/swagger/Owner/swagger.json", "Owner API v1");
+                c.SwaggerEndpoint("/swagger/Member/swagger.json", "Member API v1");
                 c.SwaggerEndpoint("/swagger/Contract/swagger.json", "Contract API v1");
                 c.SwaggerEndpoint("/swagger/Bill/swagger.json", "Bill API v1");
                 c.SwaggerEndpoint("/swagger/RealEstateUnit/swagger.json", "Real Estate Unit API v1");
-                c.SwaggerEndpoint("/swagger/Tenant/swagger.json", "Tenant API v1");
+                //c.SwaggerEndpoint("/swagger/Tenant/swagger.json", "Tenant API v1");
 
                 c.RoutePrefix = "swagger";
                 c.DocExpansion(DocExpansion.None);

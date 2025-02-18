@@ -1,10 +1,12 @@
 ﻿using Domain.Contractors;
+using Domain.Models.Contracts;
 using Domain.Models.RealEstates;
+using Domain.Models.RealEstateUnits;
 using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Models.Owners
+namespace Domain.Models.Members
 {
-    public class Owner : ModelBase<long>
+    public class Member : ModelBase<long>
     {
         [Required(ErrorMessage = "Name is required.")]
         [StringLength(50, ErrorMessage = "Name cannot exceed 50 characters.")]
@@ -15,6 +17,7 @@ namespace Domain.Models.Owners
 
         [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters.")]
         public string? Address { get; set; }
+        public string? UserId { get; set; }
 
         [Phone(ErrorMessage = "Invalid phone number.")]
         [Required(ErrorMessage = "Phone number is required.")]
@@ -25,7 +28,10 @@ namespace Domain.Models.Owners
         public string Role { get; set; }
 
         // NAVIGATION PROPERTY
-        public virtual ICollection<RealEstate> RealEstates { get; set; } = new List<RealEstate>();
+        public virtual ICollection<RealEstate> OwnerRealEstate { get; set; } = new List<RealEstate>();
+        public virtual ICollection<RealEstateUnit> TanentRealEstateUnit { get; set; } = new List<RealEstateUnit>();
+        public virtual ICollection<Contract> MarketerContract { get; set; } = new List<Contract>();
+        public virtual ICollection<Contract> TanentContract { get; set; } = new List<Contract>();
 
     }
 

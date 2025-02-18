@@ -1,6 +1,7 @@
 ﻿using Domain.Contractors;
+using Domain.Models.Contracts;
+using Domain.Models.Members;
 using Domain.Models.RealEstates;
-using Domain.Models.Tenants;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Models.RealEstateUnits
@@ -20,16 +21,18 @@ namespace Domain.Models.RealEstateUnits
 
         public string Status { get; set; }
 
-        [ForeignKey("Tenant")]
         public long? TenantId { get; set; }
 
         [ForeignKey("RealEstate")]
         public long RealEstateId { get; set; }
 
         // NAVIGATION PROPERTY
-        public Tenant Tenant { get; set; }
+        public Member Tenant { get; set; }
 
         public RealEstate RealEstate { get; set; }
+
+        public virtual ICollection<Contract> Contracts { get; set; } = new HashSet<Contract>();
+
     }
 
 }

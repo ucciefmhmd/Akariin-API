@@ -29,22 +29,6 @@ public static class ConfigureServices
 
         services.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-        //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        //           .AddJwtBearer(options =>
-        //           {
-        //               options.TokenValidationParameters = new TokenValidationParameters
-        //               {
-        //                   ValidateIssuer = true,
-        //                   ValidateAudience = true,
-        //                   ValidateLifetime = true,
-        //                   ValidateIssuerSigningKey = true,
-        //                   ValidIssuer = configuration["Jwt:Issuer"],
-        //                   ValidAudience = configuration["Jwt:Audience"],
-        //                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
-        //               };
-        //           });
-
-
         //~ Add authorization configurations from a custom method
         services.AddAuthorizationConfiguration();
 
@@ -148,17 +132,17 @@ public static class ConfigureServices
                 Title = "Contract API",
             });
             
-            swagger.SwaggerDoc("Owner", new OpenApiInfo
+            swagger.SwaggerDoc("Member", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Owner API",
+                Title = "Member API",
             });
 
-            swagger.SwaggerDoc("Tenant", new OpenApiInfo
-            {
-                Version = "v1",
-                Title = "Tenant API",
-            });
+            //swagger.SwaggerDoc("Tenant", new OpenApiInfo
+            //{
+            //    Version = "v1",
+            //    Title = "Tenant API",
+            //});
 
             swagger.SwaggerDoc("Common", new OpenApiInfo
             {

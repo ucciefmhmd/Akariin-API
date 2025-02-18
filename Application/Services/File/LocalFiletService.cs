@@ -1,16 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Application.Utilities.Contractors;
-using Application.Utilities.Extensions;
 using Application.Utilities.Models;
-using Domain.Contractors;
-using Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.Services.File
 {
@@ -27,9 +17,7 @@ namespace Application.Services.File
                     {
                         IsSuccess=false,
                         ErrorCode=Domain.Common.ErrorCode.NotFound,
-#if DEBUG
-                        Errors = { "File Not Found." },
-#endif
+                        Errors = { "File Not Found." }
                     };
                 }
 
@@ -85,6 +73,7 @@ namespace Application.Services.File
 
                 if (file == null || file.Length == 0)
                     return new UploadFileResult() { ErrorCode = Domain.Common.ErrorCode.BadFile, Errors = { "Bad file" }, IsSuccess = false };
+
                 var filePath = Path.Combine("wwwroot", GetUploadDirectory(Id) + Guid.NewGuid().ToString() + "_" + file.FileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
