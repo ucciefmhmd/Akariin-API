@@ -10,19 +10,14 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Application.Utilities.Models;
 using Application.Services.File;
-using Domain.Common.Constants;
-using System.Data;
 
 namespace Application.Common.User.Queries.GetUser
 {
-
     public record GetUserQueryResult : BaseCommandResult
     {
         public UserDto User { get; set; }
 
     }
-
-
 
     public record GetUserQuery : IRequest<GetUserQueryResult>
     {
@@ -40,6 +35,8 @@ namespace Application.Common.User.Queries.GetUser
         public string PhoneNumber { get; set; }
         public string Image { get; set; }
         public string Role { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
     }
     public sealed class GetUserHandler : IRequestHandler<GetUserQuery, GetUserQueryResult>
     {
@@ -87,16 +84,16 @@ namespace Application.Common.User.Queries.GetUser
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
                     Image = user.Image,
-                    Role = roles.FirstOrDefault()
+                    Role = roles.FirstOrDefault(),
+                    CreatedDate = user.CreatedDate,
+                    ModifiedDate = user.ModifiedDate
                 };
 
-                var url = "";
+                var profile = await _attachmentService.GetFilesUrlAsync(Path.Combine("profiles", user.Id.ToString()));
 
-                var profile = await _attachmentService.GetFilesUrlAsync(Path.Combine("profiles", user.Id));
-
-                if (profile.IsSuccess)
+                if (profile.IsSuccess && profile.Urls.Count > 0)
                 {
-                    user.Image = profile.Urls.Count > 0 ? profile.Urls[0] : "";
+                    user.Image = profile.Urls[0];
                 }
 
                 return new GetUserQueryResult

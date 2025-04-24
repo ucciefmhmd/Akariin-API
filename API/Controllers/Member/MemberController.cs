@@ -43,5 +43,7 @@ namespace API.Controllers.Owner
         {
             return await this.HandleCommandResult(_mediator.Send(new DeleteMemberCommand(id)));
         }
+
+
     }
 }

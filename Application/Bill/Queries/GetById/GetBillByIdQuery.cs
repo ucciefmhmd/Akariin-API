@@ -23,15 +23,21 @@ namespace Application.Bill.Queries.GetById
             {
                 var bill = await _dbContext.Bills
                     .Include(b => b.Contract)
+                    .Where(b => !b.IsDeleted && b.Id == request.Id)
                     .Select(b => new BillDto
                     {
                         Id = b.Id,
-                        Amount = b.Amount,
-                        Date = b.Date,
-                        Number = b.Number,
+                        BillDate = b.BillDate,
+                        BillNumber = b.BillNumber,
+                        IssuedBy = b.IssuedBy,
+                        TotalAmount = b.TotalAmount,
                         Salary = b.Salary,
+                        ConfirmSalary = b.ConfirmSalary,
+                        StatusBills = b.StatusBills,
                         Discount = b.Discount,
                         Tax = b.Tax,
+                        TenantId = b.TenantId,
+                        MarketerId = b.MarketerId,
                         ContractId = b.Contract.Id,
                         CreatedBy = b.CreatedBy != null ? new CreatedByVM { Name = b.CreatedBy.Name, Id = b.CreatedBy.Id } : null,
                         ModifiedBy = b.ModifiedBy != null ? new CreatedByVM { Name = b.ModifiedBy.Name, Id = b.ModifiedBy.Id } : null,

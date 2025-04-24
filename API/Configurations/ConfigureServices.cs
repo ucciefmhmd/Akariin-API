@@ -47,56 +47,18 @@ public static class ConfigureServices
         services.AddApplicationServices(configuration);
 
         //~ Configure JWT settings from the application configuration
-        //services.Configure<Application.Common.User.Commands.Login.JWT>(configuration.GetSection("JWT"));
+        //services.Configure<Application.Common.User.Commands.Login.JWT>(configura  tion.GetSection("JWT"));
 
         //~ Add CORS policy to allow any origin, header, and method
-        //services.AddCors(options =>
-        //{
-        //    options.AddPolicy("AllowOrigin", builder =>
-        //    {
-        //        builder.AllowAnyOrigin()
-        //               .AllowAnyHeader()
-        //               .AllowAnyMethod();
-        //               //.WithExposedHeaders("Content-Disposition");
-        //    });
-        //});
-        //services.AddCors(options =>
-        //{
-        //    // Define the "AllowOrigin" policy
-        //    options.AddPolicy("AllowOrigin", builder =>
-        //    {
-        //        builder.AllowAnyOrigin()
-        //               .AllowAnyHeader()
-        //               .AllowAnyMethod()
-        //               .WithExposedHeaders("Content-Disposition");
-        //    });
-
-        //    // Define the "AllowSpecificOrigin" policy
-        //    options.AddPolicy("AllowSpecificOrigin", builder =>
-        //    {
-        //        builder.WithOrigins("http://localhost:4200") // Specify allowed origin
-        //               .AllowAnyHeader()
-        //               .AllowAnyMethod()
-        //               .AllowCredentials();
-        //    }); 
-
-        //    options.AddPolicy("AllowChatOrigin", builder =>
-        //    {
-        //        builder.WithOrigins("http://localhost:4200", "http://localhost:51284")
-        //               .AllowAnyHeader()
-        //               .AllowAnyMethod()
-        //               .AllowCredentials();
-        //    });
-        //});
         services.AddCors(options =>
         {
-            options.AddPolicy("AllowLocalOrigin", builder =>
+            options.AddPolicy("AllowServerOrigin", builder =>
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyHeader()
                        .AllowAnyMethod();
             });
-            options.AddPolicy("AllowServerOrigin", builder =>
+            options.AddPolicy("AllowLocalOrigin", builder =>
             {
                 builder.WithOrigins("http://localhost:4200")
                        .AllowAnyHeader()
@@ -138,11 +100,11 @@ public static class ConfigureServices
                 Title = "Member API",
             });
 
-            //swagger.SwaggerDoc("Tenant", new OpenApiInfo
-            //{
-            //    Version = "v1",
-            //    Title = "Tenant API",
-            //});
+            swagger.SwaggerDoc("MaintenanceRequest", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "MaintenanceRequest API",
+            });
 
             swagger.SwaggerDoc("Common", new OpenApiInfo
             {

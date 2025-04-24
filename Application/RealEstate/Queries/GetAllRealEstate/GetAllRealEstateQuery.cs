@@ -28,12 +28,14 @@ namespace Application.RealEstate.Queries.GetAllRealEstate
         public string Service { get; set; }
         public string? Image { get; set; }
         public long CountRealEstateUnit { get; set; }
+        public long CountContracts { get; set; }
+        public decimal ContractSumSalary { get; set; }
         public string Status { get; set; }
         public long OwnerId { get; set; }
         public CreatedByVM CreatedBy { get; set; }
         public CreatedByVM ModifiedBy { get; set; }
         public DateTime CreatedDate { get; set; }
-        public DateTime ModifiedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
 
     }
 
@@ -52,8 +54,9 @@ namespace Application.RealEstate.Queries.GetAllRealEstate
             {
                 var realEstates = await _dbContext.RealEstates
                     .Include(re => re.Owner)
+                    .Include(re => re.Contracts)
                     .Search(request.SearchTerm)
-                    .Where(i => i.CreatedById == request.UserId || request.UserId == null)
+                    .Where(re => !re.IsDeleted && (re.CreatedById == request.UserId || request.UserId == null))
                     .Select(re => new RealEstateDto
                     {
                         Id = re.Id,
@@ -62,6 +65,8 @@ namespace Application.RealEstate.Queries.GetAllRealEstate
                         Category = re.Category,
                         Service = re.Service,
                         CountRealEstateUnit = re.RealEstateUnits.Count,
+                        CountContracts = _dbContext.Contracts.Count(c => c.RealEstateId == re.Id && c.IsActive),
+                        ContractSumSalary = _dbContext.Contracts.Where(c => c.RealEstateId == re.Id && c.IsActive).Sum(c => (decimal?)c.PaymentAmount) ?? 0m,
                         OwnerId = re.Owner.Id,
                         CreatedBy = re.CreatedBy != null ? new CreatedByVM { Name = re.CreatedBy.Name, Id = re.CreatedBy.Id } : null,
                         ModifiedBy = re.ModifiedBy != null ? new CreatedByVM { Name = re.ModifiedBy.Name, Id = re.ModifiedBy.Id } : null,

@@ -100,4 +100,13 @@ namespace Domain.Common
         Failed = 8          // Order failed (e.g., payment issue)
     }
 
+    public enum StatusBills
+    {
+        Pending = 1,          // في انتظار التحصيل
+        Collected,            // تم التحصيل
+        NotCollected,         // لم يتم التحصيل
+        Deferred,             // مؤجل
+        PartiallyCollected    // تم التحصيل جزئيا
+    }
+
 }

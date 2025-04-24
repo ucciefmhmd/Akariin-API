@@ -38,7 +38,9 @@ namespace Application.RealEstate.Commends.AddRealEstate
                     GasMeter = request.GasMeter,
                     WaterMeter = request.WaterMeter,
                     Status = request.Status,
-                    OwnerId = request.OwnerId
+                    OwnerId = request.OwnerId,
+                    IsActive = true,
+                    IsDeleted = false,
                 };
 
                 var validationResults = new List<ValidationResult>();

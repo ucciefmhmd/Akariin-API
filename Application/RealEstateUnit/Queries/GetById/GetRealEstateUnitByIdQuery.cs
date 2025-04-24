@@ -31,10 +31,11 @@ namespace Application.RealEstateUnit.Queries.GetById
         public string Status { get; set; }
         public long? TenantId { get; set; }
         public long RealEstateId { get; set; }
+        public string RealEstateName { get; set; }
         public CreatedByVM CreatedBy { get; set; }
         public CreatedByVM ModifiedBy { get; set; }
         public DateTime CreatedDate { get; set; }
-        public DateTime ModifiedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
 
     }
 
@@ -46,7 +47,7 @@ namespace Application.RealEstateUnit.Queries.GetById
             {
                 var realEstateUnit = await _dbContext.RealEstateUnits
                     .Include(re => re.Tenant)
-                    .Where(re => re.Id == request.Id)
+                    .Where(re => !re.IsDeleted && re.Id == request.Id)
                     .Select(re => new RealEstateUnitDataDto
                     {
                         Id = re.Id,
@@ -62,6 +63,7 @@ namespace Application.RealEstateUnit.Queries.GetById
                         Status = re.Status,
                         TenantId = re.TenantId,
                         RealEstateId = re.RealEstateId,
+                        RealEstateName = re.RealEstate.Name,
                         CreatedBy = re.CreatedBy != null ? new CreatedByVM { Name = re.CreatedBy.Name, Id = re.CreatedBy.Id } : null,
                         ModifiedBy = re.ModifiedBy != null ? new CreatedByVM { Name = re.ModifiedBy.Name, Id = re.ModifiedBy.Id } : null,
                         CreatedDate = re.CreatedDate,

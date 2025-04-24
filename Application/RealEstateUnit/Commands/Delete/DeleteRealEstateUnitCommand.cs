@@ -1,5 +1,5 @@
-﻿using Application.Utilities.Models;
-using Infrastructure;
+﻿using Application.Services.DeleteService;
+using Application.Utilities.Models;
 using MediatR;
 
 namespace Application.RealEstateUnit.Commends.Delete
@@ -8,39 +8,21 @@ namespace Application.RealEstateUnit.Commends.Delete
 
     public record DeleteRealEstateUnitCommandResult : BaseCommandResult
     {
+        public long Id { get; set; }
     }
 
-    public class DeleteRealEstateUnitCommandHandler(ApplicationDbContext _dbContext) : IRequestHandler<DeleteRealEstateUnitCommand, DeleteRealEstateUnitCommandResult>
+    public class DeleteRealEstateUnitCommandHandler(ISoftDeleteService _softDeleteService) : IRequestHandler<DeleteRealEstateUnitCommand, DeleteRealEstateUnitCommandResult>
     {
         public async Task<DeleteRealEstateUnitCommandResult> Handle(DeleteRealEstateUnitCommand request, CancellationToken cancellationToken)
         {
-            try
+            var (success, message) = await _softDeleteService.SoftDeleteAsync<Domain.Models.RealEstateUnits.RealEstateUnit>(request.Id, cancellationToken);
+
+            return new DeleteRealEstateUnitCommandResult
             {
-                var realEstateUnit = await _dbContext.RealEstateUnits.FindAsync(new object[] { request.Id }, cancellationToken);
-
-                if (realEstateUnit == null)
-                {
-                    return new DeleteRealEstateUnitCommandResult
-                    {
-                        IsSuccess = false,
-                        Errors = { "Real estate not found." }
-                    };
-                }
-
-                _dbContext.RealEstateUnits.Remove(realEstateUnit);
-                await _dbContext.SaveChangesAsync(cancellationToken);
-
-                return new DeleteRealEstateUnitCommandResult { IsSuccess = true };
-            }
-            catch (Exception ex)
-            {
-                return new DeleteRealEstateUnitCommandResult
-                {
-                    IsSuccess = false,
-                    Errors = { ex.Message },
-                    ErrorCode = Domain.Common.ErrorCode.Error
-                };
-            }
+                IsSuccess = success,
+                Id = request.Id,
+                Message = message
+            };
         }
     }
 }

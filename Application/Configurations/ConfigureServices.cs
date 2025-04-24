@@ -8,6 +8,8 @@ using Application.Services.File;
 using Application.Services.Notificationsd;
 using FluentValidation;
 using Application.Utilities.Contractors;
+using Application.Services.DeleteService;
+using Application.Utilities.Models;
 
 namespace Application.Configurations
 {
@@ -22,6 +24,7 @@ namespace Application.Configurations
             services.AddTransient<EmailSender>();
             services.AddTransient<FCMNotificationSender>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ISoftDeleteService, SoftDeleteService>();
             services.AddScoped<LocalFiletService>();
             
             services.AddScoped<IUserService, UserService>();

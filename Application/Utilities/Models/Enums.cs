@@ -21,5 +21,6 @@ namespace Application.Utilities.Models
     {
         And = 1, Or
     }
+
     public enum SortDirection { ASC = 1, DESC }
 }

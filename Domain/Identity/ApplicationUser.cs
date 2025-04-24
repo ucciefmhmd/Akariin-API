@@ -30,7 +30,7 @@ public class ApplicationUser : IdentityUser
     public DateTime CreatedDate { get; set; }
 
     [DataType(DataType.DateTime)]
-    public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;
+    public DateTime ModifiedDate { get; set; }
 
     // profile
     public string? FirstName { get; set; }

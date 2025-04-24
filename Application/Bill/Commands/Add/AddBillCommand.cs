@@ -1,5 +1,5 @@
-﻿using Application.Owner.Commends.Add;
-using Application.Utilities.Models;
+﻿using Application.Utilities.Models;
+using Domain.Common;
 using Infrastructure;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
@@ -14,12 +14,16 @@ namespace Application.Bill.Commends.Add
     }
     public record CreateBillDto
     {
-        public string Amount { get; set; }
-        public DateTime Date { get; set; }
-        public long Number { get; set; }
-        public float Salary { get; set; }
-        public float Discount { get; set; }
-        public float Tax { get; set; }
+        public DateTime BillDate { get; set; }
+        public long TenantId { get; set; }
+        public string? IssuedBy { get; set; }
+        public long MarketerId { get; set; }
+        public StatusBills StatusBills { get; set; } = StatusBills.Pending;
+        public decimal Salary { get; set; }
+        public decimal ConfirmSalary { get; set; }
+        public decimal? Discount { get; set; }
+        public decimal? Tax { get; set; }
+        public decimal TotalAmount { get; set; }
         public long ContractId { get; set; }
     }
 
@@ -29,15 +33,58 @@ namespace Application.Bill.Commends.Add
         {
             try
             {
+                var tenant = await _dbContext.Members.FindAsync([request.dto.TenantId], cancellationToken: cancellationToken);
+
+                if (tenant == null)
+                {
+                    return new AddBillCommandResult
+                    {
+                        IsSuccess = false,
+                        Errors = { "Tenant not found." },
+                        ErrorCode = ErrorCode.NotFound
+                    };
+                }
+
+                var marketer = await _dbContext.Members.FindAsync([request.dto.MarketerId], cancellationToken: cancellationToken);
+
+                if (marketer == null)
+                {
+                    return new AddBillCommandResult
+                    {
+                        IsSuccess = false,
+                        Errors = { "Marketer not found." },
+                        ErrorCode = ErrorCode.NotFound
+                    };
+                }
+
+                var contract = await _dbContext.Contracts.FindAsync([request.dto.ContractId], cancellationToken: cancellationToken);
+
+                if (contract == null)
+                {
+                    return new AddBillCommandResult
+                    {
+                        IsSuccess = false,
+                        Errors = { "Contract not found." },
+                        ErrorCode = ErrorCode.NotFound
+                    };
+                }
+
                 var _bill = new Domain.Models.Bills.Bill
                 {
-                    Amount = request.dto.Amount,
-                    Date = request.dto.Date,
-                    Number = request.dto.Number,
+                    BillDate = request.dto.BillDate,
+                    BillNumber = Guid.NewGuid().ToString()[..8],
+                    IssuedBy = request.dto.IssuedBy,
+                    TotalAmount = request.dto.TotalAmount,
                     Salary = request.dto.Salary,
                     Discount = request.dto.Discount,
                     Tax = request.dto.Tax,
-                    ContractId = request.dto.ContractId
+                    ConfirmSalary = request.dto.ConfirmSalary,
+                    StatusBills = request.dto.StatusBills,
+                    TenantId = request.dto.TenantId,
+                    MarketerId = request.dto.MarketerId,
+                    ContractId = request.dto.ContractId,
+                    IsActive = true,
+                    IsDeleted = false,
                 };
 
                 var validationResults = new List<ValidationResult>();
@@ -49,7 +96,7 @@ namespace Application.Bill.Commends.Add
                     return new AddBillCommandResult
                     {
                         IsSuccess = false,
-                        Errors = validationResults.Select(vr => vr.ErrorMessage).ToList(),
+                        Errors = [.. validationResults.Select(vr => vr.ErrorMessage)],
                         ErrorCode = Domain.Common.ErrorCode.InvalidDate
                     };
                 }
@@ -70,7 +117,7 @@ namespace Application.Bill.Commends.Add
                 {
                     IsSuccess = false,
                     Errors = { ex.Message },
-                    ErrorCode = Domain.Common.ErrorCode.Error
+                    ErrorCode = ErrorCode.Error
                 };
             }
         }

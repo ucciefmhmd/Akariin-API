@@ -40,14 +40,18 @@ public class AuditableEntitySaveChangesInterceptor(IHttpContextAccessor _httpCon
 
         bool isAdmin = user.IsInRole("Admin") || user.IsInRole("SubAdmin");
 
-        // Check if any entity being tracked contains a UserId property
+        // Check if any tracked entity contains a UserId property and if it's not null
         bool containsUserId = context.ChangeTracker.Entries()
-                                                   .Any(e =>
-                                                       e.Entity?.GetType().GetProperty("UserId") != null &&
-                                                       e.Entity.GetType().GetProperty("UserId").GetValue(e.Entity) != null);
+                                                    .Any(e =>
+                                                        e.Entity?.GetType().GetProperty("CreatedById") != null &&
+                                                        e.Entity.GetType().GetProperty("CreatedById")?.GetValue(e.Entity) is Guid userIdValue &&
+                                                        userIdValue != Guid.Empty);
 
         // If user is Admin and request contains UserId, skip updating entities
-        if (isAdmin && containsUserId) return;
+        if (isAdmin && containsUserId)
+        {
+            return;
+        }
 
         UpdateEntities(context, userId);
     }

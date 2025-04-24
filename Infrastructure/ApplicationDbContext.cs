@@ -12,7 +12,7 @@ using Domain.Models.Bills;
 using Domain.Models.Contracts;
 using Domain.Models.RoleSysem;
 using Domain.Models.Members;
-using Domain.Models.Tenants;
+using Domain.Models.MaintenanceRequests;
 
 
 namespace Infrastructure;
@@ -35,52 +35,83 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
         modelBuilder.CheckForTrim();
         base.OnModelCreating(modelBuilder);
 
-        // Configure RealEstateUnit with cascade delete
         modelBuilder.Entity<Contract>()
             .HasOne(c => c.RealEstateUnit)
             .WithMany()
             .HasForeignKey(c => c.RealEstateUnitId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
 
-        // Configure RealEstate with no action on delete
         modelBuilder.Entity<Contract>()
             .HasOne(c => c.RealEstate)
             .WithMany()
             .HasForeignKey(c => c.RealEstateId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        // Configure Owner relationship
         modelBuilder.Entity<RealEstate>()
             .HasOne(c => c.Owner)
             .WithMany(p => p.OwnerRealEstate)
             .HasForeignKey(c => c.OwnerId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
-        // Configure Tenant relationship
         modelBuilder.Entity<RealEstateUnit>()
             .HasOne(c => c.Tenant)
             .WithMany(p => p.TanentRealEstateUnit)
             .HasForeignKey(c => c.TenantId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
 
-        // Correct Marketer relationship with restrict delete
         modelBuilder.Entity<Contract>()
             .HasOne(c => c.Marketer)
             .WithMany(p => p.MarketerContract)
             .HasForeignKey(c => c.MarketerId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
 
-        // Correct Tenant relationship with restrict delete
         modelBuilder.Entity<Contract>()
             .HasOne(c => c.Tenant)
             .WithMany(p => p.TanentContract)
             .HasForeignKey(c => c.TenantId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Bill>()
+            .HasOne(c => c.Marketer)
+            .WithMany(p => p.MarketerBill)
+            .HasForeignKey(c => c.MarketerId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Bill>()
+            .HasOne(c => c.Tenant)
+            .WithMany(p => p.TanentBill)
+            .HasForeignKey(c => c.TenantId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<MaintenanceRequest>()
+            .HasOne(c => c.Tenant)
+            .WithMany(p => p.TanentMaintenanceRequest)
+            .HasForeignKey(c => c.TenantId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<MaintenanceRequest>()
+            .HasOne(c => c.Member)
+            .WithMany(p => p.MemberMaintenanceRequest)
+            .HasForeignKey(c => c.MemberId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<MaintenanceRequest>()
+            .HasOne(c => c.RealEstate)
+            .WithMany()
+            .HasForeignKey(c => c.RealEstateId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<MaintenanceRequest>()
+            .HasOne(c => c.RealEstateUnit)
+            .WithMany()
+            .HasForeignKey(c => c.RealEstateUnitId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.EnableSensitiveDataLogging();
+
         optionsBuilder.AddInterceptors(_auditableEntitySaveChangesInterceptor);
     }
 
@@ -91,15 +122,11 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
         return await base.SaveChangesAsync(cancellationToken);
     }
 
-    //public DbSet<Owner> Owners { get; set; }
-
     public DbSet<Member> Members { get; set; }
 
     public DbSet<RealEstate> RealEstates { get; set; }
 
     public DbSet<RealEstateUnit> RealEstateUnits { get; set; }
-
-    public DbSet<Tenant> Tenant { get; set; }
 
     public DbSet<Contract> Contracts { get; set; }
 
@@ -108,5 +135,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
     public DbSet<Page> Pages { get; set; }
 
     public DbSet<UserPageRole> UserPageRoles { get; set; }
+
+    public DbSet<MaintenanceRequest> MaintenanceRequests { get; set; }
 
 }

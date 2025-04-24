@@ -27,7 +27,7 @@ namespace Configurations
                 c.SwaggerEndpoint("/swagger/Contract/swagger.json", "Contract API v1");
                 c.SwaggerEndpoint("/swagger/Bill/swagger.json", "Bill API v1");
                 c.SwaggerEndpoint("/swagger/RealEstateUnit/swagger.json", "Real Estate Unit API v1");
-                //c.SwaggerEndpoint("/swagger/Tenant/swagger.json", "Tenant API v1");
+                c.SwaggerEndpoint("/swagger/MaintenanceRequest/swagger.json", "MaintenanceRequest API v1");
 
                 c.RoutePrefix = "swagger";
                 c.DocExpansion(DocExpansion.None);

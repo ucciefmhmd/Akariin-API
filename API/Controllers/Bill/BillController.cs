@@ -19,21 +19,25 @@ namespace API.Controllers.Bill
         {
             return await this.HandleCommandResult(_mediator.Send(query));
         }
+
         [HttpGet("GetById/{id:long}")]
         public async Task<ActionResult<GetBillByIdQueryResult>> GetById(long id)
         {
             return await this.HandleCommandResult(_mediator.Send(new GetBillByIdQuery(id)));
         }
+
         [HttpPost("Add")]
         public async Task<ActionResult<AddBillCommandResult>> Add([FromBody] AddBillCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }
+
         [HttpPut("Update")]
         public async Task<ActionResult<UpdateBillCommandResult>> Update([FromBody] UpdateBillCommand command)
         {
             return await this.HandleCommandResult(_mediator.Send(command));
         }
+
         [HttpDelete("Delete/{id:long}")]
         public async Task<ActionResult<DeleteBillCommandResult>> Delete(long id)
         {

@@ -1,5 +1,6 @@
 ﻿using Domain.Contractors;
 using Domain.Models.Contracts;
+using Domain.Models.MaintenanceRequests;
 using Domain.Models.Members;
 using Domain.Models.RealEstateUnits;
 
@@ -32,6 +33,7 @@ namespace Domain.Models.RealEstates
         public virtual Member Owner { get; set; }
         public virtual ICollection<RealEstateUnit> RealEstateUnits { get; set; } = new HashSet<RealEstateUnit>();
         public virtual ICollection<Contract> Contracts { get; set; } = new HashSet<Contract>();
+        public virtual ICollection<MaintenanceRequest> MaintenanceRequests { get; set; } = new HashSet<MaintenanceRequest>();
     }
 
 }

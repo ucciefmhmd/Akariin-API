@@ -9,7 +9,7 @@ namespace Domain.Models.Contracts
 {
     public class Contract : ModelBase<long>
     {
-        public string ContractNumber { get; set; }
+        public string ContractNumber { get; set; } = Guid.NewGuid().ToString().Substring(0, 8);
         public string PaymentCycle { get; set; }
         public string AutomaticRenewal { get; set; }
         public string ContractRent { get; set; }
@@ -20,9 +20,9 @@ namespace Domain.Models.Contracts
         public decimal? TenantTax { get; set; }
         public string Status { get; set; }
         public string? ContractFile { get; set; }
-        public bool IsActive { get; set; }
         public bool IsExecute { get; set; }
         public bool IsFinished { get; set; }
+        public decimal PaymentAmount { get; set; }
 
 
         // Foreign Keys

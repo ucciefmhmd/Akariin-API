@@ -146,12 +146,16 @@ namespace Application.Common.User.Commands.UpdateUser
                             };
                         }
                     }
-                    if(request.Image != null)
+                    
+                    if (request.Image is not null)
                     {
-                        await _attachmentService.UploadFilesAsync(Path.Combine("profiles",request.Id),request.Image);
+                        await _attachmentService.DeleteFilesAsync(request.Id.ToString());
+
+                        await _attachmentService.UploadFilesAsync(Path.Combine("profiles", request.Id.ToString()), request.Image);
                     }
 
                     await trans.CommitAsync(cancellationToken);
+
                     return new UpdateUserCommandResult()
                     {
                         IsSuccess = true

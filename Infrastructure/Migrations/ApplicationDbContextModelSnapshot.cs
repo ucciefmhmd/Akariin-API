@@ -171,9 +171,15 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Amount")
+                    b.Property<DateTime>("BillDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("BillNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("ConfirmSalary")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<long>("ContractId")
                         .HasColumnType("bigint");
@@ -184,26 +190,41 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                    b.Property<decimal?>("Discount")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<float>("Discount")
-                        .HasColumnType("real");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("IssuedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("MarketerId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ModifiedById")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("Number")
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("StatusBills")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Tax")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<long>("TenantId")
                         .HasColumnType("bigint");
 
-                    b.Property<float>("Salary")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Tax")
-                        .HasColumnType("real");
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -211,9 +232,13 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CreatedById");
 
+                    b.HasIndex("MarketerId");
+
                     b.HasIndex("ModifiedById");
 
-                    b.ToTable("Bills", (string)null);
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Bills");
                 });
 
             modelBuilder.Entity("Domain.Models.Contracts.Contract", b =>
@@ -254,17 +279,26 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsExecute")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsFinished")
                         .HasColumnType("bit");
 
+                    b.Property<long>("MarketerId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("ModifiedById")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<decimal>("PaymentAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("PaymentCycle")
                         .IsRequired()
@@ -273,7 +307,13 @@ namespace Infrastructure.Migrations
                     b.Property<long>("RealEstateId")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("RealEstateId1")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("RealEstateUnitId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("RealEstateUnitId1")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("StartDate")
@@ -297,18 +337,116 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CreatedById");
 
+                    b.HasIndex("MarketerId");
+
                     b.HasIndex("ModifiedById");
 
                     b.HasIndex("RealEstateId");
 
+                    b.HasIndex("RealEstateId1");
+
                     b.HasIndex("RealEstateUnitId");
+
+                    b.HasIndex("RealEstateUnitId1");
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Contracts", (string)null);
+                    b.ToTable("Contracts");
                 });
 
-            modelBuilder.Entity("Domain.Models.Owners.Owner", b =>
+            modelBuilder.Entity("Domain.Models.MaintenanceRequests.MaintenanceRequest", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("CostBearer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DeliveryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPrivateMaintenance")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MaintenanceRequestFile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MaintenanceType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("MemberId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ModifiedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("RealEstateId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("RealEstateId1")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RealEstateUnitId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("RealEstateUnitId1")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RequestNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("TenantId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("ModifiedById");
+
+                    b.HasIndex("RealEstateId");
+
+                    b.HasIndex("RealEstateId1");
+
+                    b.HasIndex("RealEstateUnitId");
+
+                    b.HasIndex("RealEstateUnitId1");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("MaintenanceRequests");
+                });
+
+            modelBuilder.Entity("Domain.Models.Members.Member", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -333,10 +471,16 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ModifiedById")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -355,16 +499,13 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("ModifiedById");
 
-                    b.ToTable("Owners", (string)null);
+                    b.ToTable("Members");
                 });
 
             modelBuilder.Entity("Domain.Models.RealEstateUnits.RealEstateUnit", b =>
@@ -402,10 +543,16 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ModifiedById")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("NumOfRooms")
@@ -441,11 +588,9 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("RealEstateId");
 
-                    b.HasIndex("TenantId")
-                        .IsUnique()
-                        .HasFilter("[TenantId] IS NOT NULL");
+                    b.HasIndex("TenantId");
 
-                    b.ToTable("RealEstateUnits", (string)null);
+                    b.ToTable("RealEstateUnits");
                 });
 
             modelBuilder.Entity("Domain.Models.RealEstates.RealEstate", b =>
@@ -496,13 +641,19 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("IssueDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ModifiedById")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -535,7 +686,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("RealEstates", (string)null);
+                    b.ToTable("RealEstates");
                 });
 
             modelBuilder.Entity("Domain.Models.RoleSysem.Page", b =>
@@ -550,10 +701,16 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ModifiedById")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -570,7 +727,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ModifiedById");
 
-                    b.ToTable("Pages", (string)null);
+                    b.ToTable("Pages");
                 });
 
             modelBuilder.Entity("Domain.Models.RoleSysem.UserPageRole", b =>
@@ -598,67 +755,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserPageRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Models.Tenants.Tenant", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("CreatedById")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IdNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ModifiedById")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Nationality")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ModifiedById");
-
-                    b.ToTable("Tenant", (string)null);
+                    b.ToTable("UserPageRoles");
                 });
 
             modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.DeviceFlowCodes", b =>
@@ -951,15 +1048,31 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
+                    b.HasOne("Domain.Models.Members.Member", "Marketer")
+                        .WithMany("MarketerBill")
+                        .HasForeignKey("MarketerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("Domain.Identity.ApplicationUser", "ModifiedBy")
                         .WithMany()
                         .HasForeignKey("ModifiedById");
+
+                    b.HasOne("Domain.Models.Members.Member", "Tenant")
+                        .WithMany("TanentBill")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Contract");
 
                     b.Navigation("CreatedBy");
 
+                    b.Navigation("Marketer");
+
                     b.Navigation("ModifiedBy");
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Domain.Models.Contracts.Contract", b =>
@@ -967,6 +1080,12 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Identity.ApplicationUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById");
+
+                    b.HasOne("Domain.Models.Members.Member", "Marketer")
+                        .WithMany("MarketerContract")
+                        .HasForeignKey("MarketerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("Domain.Identity.ApplicationUser", "ModifiedBy")
                         .WithMany()
@@ -978,19 +1097,29 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("Domain.Models.RealEstates.RealEstate", null)
+                        .WithMany("Contracts")
+                        .HasForeignKey("RealEstateId1");
+
                     b.HasOne("Domain.Models.RealEstateUnits.RealEstateUnit", "RealEstateUnit")
                         .WithMany()
                         .HasForeignKey("RealEstateUnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Domain.Models.Tenants.Tenant", "Tenant")
-                        .WithMany()
+                    b.HasOne("Domain.Models.RealEstateUnits.RealEstateUnit", null)
+                        .WithMany("Contracts")
+                        .HasForeignKey("RealEstateUnitId1");
+
+                    b.HasOne("Domain.Models.Members.Member", "Tenant")
+                        .WithMany("TanentContract")
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
+
+                    b.Navigation("Marketer");
 
                     b.Navigation("ModifiedBy");
 
@@ -1001,7 +1130,62 @@ namespace Infrastructure.Migrations
                     b.Navigation("Tenant");
                 });
 
-            modelBuilder.Entity("Domain.Models.Owners.Owner", b =>
+            modelBuilder.Entity("Domain.Models.MaintenanceRequests.MaintenanceRequest", b =>
+                {
+                    b.HasOne("Domain.Identity.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("Domain.Models.Members.Member", "Member")
+                        .WithMany("MemberMaintenanceRequest")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Identity.ApplicationUser", "ModifiedBy")
+                        .WithMany()
+                        .HasForeignKey("ModifiedById");
+
+                    b.HasOne("Domain.Models.RealEstates.RealEstate", "RealEstate")
+                        .WithMany()
+                        .HasForeignKey("RealEstateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.RealEstates.RealEstate", null)
+                        .WithMany("MaintenanceRequests")
+                        .HasForeignKey("RealEstateId1");
+
+                    b.HasOne("Domain.Models.RealEstateUnits.RealEstateUnit", "RealEstateUnit")
+                        .WithMany()
+                        .HasForeignKey("RealEstateUnitId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.RealEstateUnits.RealEstateUnit", null)
+                        .WithMany("MaintenanceRequest")
+                        .HasForeignKey("RealEstateUnitId1");
+
+                    b.HasOne("Domain.Models.Members.Member", "Tenant")
+                        .WithMany("TanentMaintenanceRequest")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Member");
+
+                    b.Navigation("ModifiedBy");
+
+                    b.Navigation("RealEstate");
+
+                    b.Navigation("RealEstateUnit");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Domain.Models.Members.Member", b =>
                 {
                     b.HasOne("Domain.Identity.ApplicationUser", "CreatedBy")
                         .WithMany()
@@ -1032,9 +1216,10 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Models.Tenants.Tenant", "Tenant")
-                        .WithOne("RealEstateUnit")
-                        .HasForeignKey("Domain.Models.RealEstateUnits.RealEstateUnit", "TenantId");
+                    b.HasOne("Domain.Models.Members.Member", "Tenant")
+                        .WithMany("TanentRealEstateUnit")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("CreatedBy");
 
@@ -1055,10 +1240,10 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ModifiedById");
 
-                    b.HasOne("Domain.Models.Owners.Owner", "Owner")
-                        .WithMany("RealEstates")
+                    b.HasOne("Domain.Models.Members.Member", "Owner")
+                        .WithMany("OwnerRealEstate")
                         .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
@@ -1108,21 +1293,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Domain.Models.Tenants.Tenant", b =>
-                {
-                    b.HasOne("Domain.Identity.ApplicationUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("Domain.Identity.ApplicationUser", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("ModifiedById");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("ModifiedBy");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1176,25 +1346,44 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Models.Owners.Owner", b =>
+            modelBuilder.Entity("Domain.Models.Members.Member", b =>
                 {
-                    b.Navigation("RealEstates");
+                    b.Navigation("MarketerBill");
+
+                    b.Navigation("MarketerContract");
+
+                    b.Navigation("MemberMaintenanceRequest");
+
+                    b.Navigation("OwnerRealEstate");
+
+                    b.Navigation("TanentBill");
+
+                    b.Navigation("TanentContract");
+
+                    b.Navigation("TanentMaintenanceRequest");
+
+                    b.Navigation("TanentRealEstateUnit");
+                });
+
+            modelBuilder.Entity("Domain.Models.RealEstateUnits.RealEstateUnit", b =>
+                {
+                    b.Navigation("Contracts");
+
+                    b.Navigation("MaintenanceRequest");
                 });
 
             modelBuilder.Entity("Domain.Models.RealEstates.RealEstate", b =>
                 {
+                    b.Navigation("Contracts");
+
+                    b.Navigation("MaintenanceRequests");
+
                     b.Navigation("RealEstateUnits");
                 });
 
             modelBuilder.Entity("Domain.Models.RoleSysem.Page", b =>
                 {
                     b.Navigation("UserPageRoles");
-                });
-
-            modelBuilder.Entity("Domain.Models.Tenants.Tenant", b =>
-                {
-                    b.Navigation("RealEstateUnit")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

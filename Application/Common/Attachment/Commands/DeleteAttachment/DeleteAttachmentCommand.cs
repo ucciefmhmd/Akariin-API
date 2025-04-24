@@ -49,12 +49,12 @@ namespace Application.Common.Attachment.Commands.DeleteAttachment
                     {
                         IsSuccess = false,
                         ErrorCode = Domain.Common.ErrorCode.NotFound,
-#if DEBUG || LOCAL
                         Errors = { $"Url Not Found." }
-#endif
                     };
                 }
+
                 await attachmentService.DeleteFileAsync(filePath);
+
                 return new DeleteAttachmentCommandResult()
                 {
                     IsSuccess = true
@@ -66,9 +66,7 @@ namespace Application.Common.Attachment.Commands.DeleteAttachment
                 {
                     IsSuccess = false,
                     ErrorCode = Domain.Common.ErrorCode.Error,
-#if DEBUG || LOCAL
                     Errors = { error.Message }
-#endif
                 };
             }
         }

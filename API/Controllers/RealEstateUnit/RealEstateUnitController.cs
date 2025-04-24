@@ -32,7 +32,7 @@ namespace API.Controllers.RealEstateUnit
         [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN},{Roles.USER}")]
         public async Task<ActionResult<AddRealEstateUnitCommendResult>> Add([FromForm] AddRealEstateUnitCommand command)
         {
-            return await this.HandleCommandResult(_mediator.Send(command)); 
+            return await this.HandleCommandResult(_mediator.Send(command));
         }
 
         [HttpPut("Update")]

@@ -46,5 +46,6 @@ namespace API.Controllers.RealEstate
         {
             return await this.HandleCommandResult(_mediator.Send(new DeleteRealEstateCommand(id)));
         }
+
     }
 }

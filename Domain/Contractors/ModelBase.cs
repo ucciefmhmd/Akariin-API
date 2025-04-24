@@ -8,11 +8,14 @@ namespace Domain.Contractors
     {
         [Key]
         public T Id { get; set; }
+        public bool IsActive { get; set; } = true;
+        public bool IsDeleted { get; set; } = true;
 
         [DataType(DataType.DateTime)]
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedDate { get; set; }
+
         [DataType(DataType.DateTime)]
-        public DateTime ModifiedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; } = null!;
 
         public virtual ApplicationUser? CreatedBy { get; set; }
         [ForeignKey("CreatedBy")]

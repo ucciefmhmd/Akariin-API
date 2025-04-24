@@ -39,7 +39,7 @@ namespace Application.RealEstate.Queries.GetByIdRealEstate
         public CreatedByVM CreatedBy { get; set; }
         public CreatedByVM ModifiedBy { get; set; }
         public DateTime CreatedDate { get; set; }
-        public DateTime ModifiedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
 
     }
     public class GetRealEstateByIdQueryHandler(ApplicationDbContext _dbContext, AttachmentService _attachmentService) : IRequestHandler<GetRealEstateByIdQuery, GetRealEstateByIdQueryResult>
@@ -50,7 +50,7 @@ namespace Application.RealEstate.Queries.GetByIdRealEstate
             {
                 var realEstate = await _dbContext.RealEstates
                     .Include(re => re.Owner)
-                    .Where(re => re.Id == request.Id)
+                    .Where(re => !re.IsDeleted && re.Id == request.Id)
                     .Select(re => new RealEstatDataeDto
                     {
                         Id = re.Id,

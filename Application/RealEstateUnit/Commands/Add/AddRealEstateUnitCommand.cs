@@ -33,9 +33,12 @@ namespace Application.RealEstateUnit.Commends.Add
                     RealEstateId = request.RealEstateId,
                     GasMeter = request.GasMeter,
                     ElectricityCalculation = request.ElectricityCalculation,
+                    IsActive = true,
+                    IsDeleted = false,
                 };
 
                 var validationResults = new List<ValidationResult>();
+
                 var isValid = Validator.TryValidateObject(realEstateUnit, new ValidationContext(realEstateUnit), validationResults, true);
 
                 if (!isValid)

@@ -28,6 +28,8 @@ namespace Application.Common.User.Queries.GetUsers
         public bool IsActive { get; set; }
         public string Role { get; set; }
         public string Image { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
     }
     //public sealed class GetUsersHandler : IRequestHandler<GetUsersQuery, GetUsersQueryResult>
     //{
@@ -111,7 +113,6 @@ namespace Application.Common.User.Queries.GetUsers
     //}
 
 
-
     public sealed class GetUsersHandler : IRequestHandler<GetUsersQuery, GetUsersQueryResult>
     {
         private readonly ApplicationDbContext _dbContext;
@@ -142,6 +143,8 @@ namespace Application.Common.User.Queries.GetUsers
                         PhoneNumber = u.PhoneNumber ?? "",
                         IsActive = u.LockoutEnd == null ? true : false,
                         Image = u.Image,
+                        CreatedDate = u.CreatedDate,
+                        ModifiedDate = u.ModifiedDate,
                         Role = u.Role // This will be updated later
                     });
 
