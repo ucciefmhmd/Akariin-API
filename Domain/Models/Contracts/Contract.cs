@@ -23,7 +23,7 @@ namespace Domain.Models.Contracts
         public bool IsExecute { get; set; }
         public bool IsFinished { get; set; }
         public decimal PaymentAmount { get; set; }
-
+        public decimal AdministrativeExpenses { get; set; }
 
         // Foreign Keys
         [ForeignKey(nameof(RealEstateUnit))]

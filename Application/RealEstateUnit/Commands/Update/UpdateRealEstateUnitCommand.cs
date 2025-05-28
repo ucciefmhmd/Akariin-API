@@ -4,10 +4,13 @@ using System.ComponentModel.DataAnnotations;
 using Infrastructure;
 using Application.Services.File;
 using Microsoft.AspNetCore.Http;
+using Domain.Common;
 
 namespace Application.RealEstateUnit.Commends.Update
 {
-    public record UpdateRealEstateUnitCommand(long Id, string AnnualRent, string Area, string Floor, string UnitNumber, string NumOfRooms, string Type, string? GasMeter, string? WaterMeter, string? ElectricityCalculation, string Status, IFormFile? Image, long? TenantId, long RealEstateId) : IRequest<UpdateRealEstateUnitCommendResult>;
+    public record UpdateRealEstateUnitCommand(long Id, string AnnualRent, string Area, string Floor, string UnitNumber, string NumOfRooms,
+        string Type, string? GasMeter, string? WaterMeter, string? ElectricityCalculation, string Status, IFormFile? Image, 
+        long? TenantId, long RealEstateId) : IRequest<UpdateRealEstateUnitCommendResult>;
 
     public record UpdateRealEstateUnitCommendResult : BaseCommandResult
     {
@@ -20,7 +23,7 @@ namespace Application.RealEstateUnit.Commends.Update
         {
             try
             {
-                var realEstateUnit = await _dbContext.RealEstateUnits.FindAsync(new object[] { request.Id }, cancellationToken);
+                var realEstateUnit = await _dbContext.RealEstateUnits.FindAsync([request.Id], cancellationToken);
 
                 if (realEstateUnit == null)
                 {
@@ -45,17 +48,13 @@ namespace Application.RealEstateUnit.Commends.Update
                 realEstateUnit.GasMeter = request.GasMeter;
                 realEstateUnit.ElectricityCalculation = request.ElectricityCalculation;
                 realEstateUnit.Status = request.Status;
+
                 if (request.Image is not null)
                 {
-                    // Delete old image if it exists
                     if (!string.IsNullOrEmpty(realEstateUnit.Image))
-                    {
                         await _attachmentService.DeleteFilesAsync(realEstateUnit.Id.ToString());
-                    }
 
-                    // Upload new image
                     await _attachmentService.UploadFilesAsync(Path.Combine("profiles", request.Id.ToString()), request.Image);
-
                 }
 
                 var validationResults = new List<ValidationResult>();
@@ -67,8 +66,8 @@ namespace Application.RealEstateUnit.Commends.Update
                     return new UpdateRealEstateUnitCommendResult
                     {
                         IsSuccess = false,
-                        Errors = validationResults.Select(vr => vr.ErrorMessage).ToList(),
-                        ErrorCode = Domain.Common.ErrorCode.InvalidDate
+                        Errors = [.. validationResults.Select(vr => vr.ErrorMessage)],
+                        ErrorCode = ErrorCode.InvalidDate
                     };
                 }
 
@@ -88,7 +87,7 @@ namespace Application.RealEstateUnit.Commends.Update
                 {
                     IsSuccess = false,
                     Errors = { ex.Message },
-                    ErrorCode = Domain.Common.ErrorCode.Error
+                    ErrorCode = ErrorCode.Error
                 };
             }
         }

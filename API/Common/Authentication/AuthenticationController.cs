@@ -42,9 +42,7 @@ namespace API.Common.Authentication
         [HttpPost("Login")]
         public async Task<ActionResult<LoginCommandResult>> Login([FromBody] LoginCommand loginCommand)
         {
-
             return await this.HandleCommandResult(_mediator.Send(loginCommand));
-
         }
 
 

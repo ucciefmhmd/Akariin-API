@@ -1,9 +1,7 @@
-﻿
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Domain.Identity;
-using Infrastructure;
 using System.Reflection;
 using Infrastructure.Common.Extensions;
 using Domain.Common.Constants;
@@ -17,7 +15,7 @@ public partial class ApplicationDbContextInitialiser
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     // Default users
-    readonly ApplicationUser administrator = new ApplicationUser
+    readonly ApplicationUser administrator = new()
     {
         FirstName = "Admin",
         EmailConfirmed = true,
@@ -69,6 +67,7 @@ public partial class ApplicationDbContextInitialiser
         var admin=await _userManager.FindByNameAsync(administrator.UserName);
         await _userManager.ChangePasswordAsync(admin, oldPassword, newPassword);
     }
+
     public async Task SeedFunctions()
     {
         try

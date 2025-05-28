@@ -2,7 +2,7 @@
 using Infrastructure;
 using MediatR;
 
-namespace Application.MaintenanceRequest.Commends.Add.Add
+namespace Application.MaintenanceRequest.Commends.Add
 {
     public record AddMaintenanceRequestCommend(CreateMaintenanceRequestDto dto) : IRequest<AddMaintenanceRequestCommendResult>;
 

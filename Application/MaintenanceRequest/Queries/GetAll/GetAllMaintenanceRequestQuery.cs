@@ -85,7 +85,7 @@ namespace Application.MaintenanceRequest.Queries.GetAll
                 {
                     IsSuccess = false,
                     ErrorCode = ErrorCode.Error,
-                    Errors = new List<string> { ex.Message }
+                    Errors = [ex.Message]
                 };
             }
         }

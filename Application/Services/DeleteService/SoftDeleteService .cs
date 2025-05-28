@@ -7,7 +7,7 @@ namespace Application.Services.DeleteService
     {
         public async Task<(bool Success, string Message)> SoftDeleteAsync<T>(long id, CancellationToken cancellationToken = default) where T : class
         {
-            var entity = await _dbContext.Set<T>().FindAsync(new object[] { id }, cancellationToken);
+            var entity = await _dbContext.Set<T>().FindAsync([id], cancellationToken);
             if (entity == null)
             {
                 return (false, $"{typeof(T).Name} with ID {id} not found.");
@@ -79,7 +79,7 @@ namespace Application.Services.DeleteService
         }
 
 
-        private void SetSoftDeleteProperties(object entity)
+        private static void SetSoftDeleteProperties(object entity)
         {
             var type = entity.GetType();
 

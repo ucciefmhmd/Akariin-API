@@ -1,24 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Application.Utilities.Extensions
 {
     public static class ExcelExtensions
     {
-        public static FileStreamResult ToDownloadableXmlFileForExcel2003(this System.Xml.Linq.XDocument file, string fileName)
+        public static FileStreamResult ToDownloadableXmlFileForExcel2003(this XDocument file, string fileName)
         {
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new();
 
             file.Save(ms);   //.Save() adds the <xml /> header tag!
             ms.Seek(0, SeekOrigin.Begin);
 
-            var r = new FileStreamResult(ms, "application/vnd.ms-excel");
-            r.FileDownloadName = String.Format("{0}.xls", fileName.Replace(" ", ""));
+            var r = new FileStreamResult(ms, "application/vnd.ms-excel")
+            {
+                FileDownloadName = String.Format("{0}.xls", fileName.Replace(" ", ""))
+            };
 
             return r;
         }
@@ -39,14 +36,14 @@ namespace Application.Utilities.Extensions
             XNamespace ss = "urn:schemas-microsoft-com:office:spreadsheet";
             XNamespace html = "http://www.w3.org/TR/REC-html40";
 
-            XDocument xdoc = new XDocument(new XDeclaration("1.0", "utf-8", "yes"));
+            XDocument xdoc = new(new XDeclaration("1.0", "utf-8", "yes"));
 
             var headerRow = from p in rows.First().GetType().GetProperties()
                             select new XElement(mainNamespace + "Cell",
                                 new XElement(mainNamespace + "Data",
                                     new XAttribute(ss + "Type", "String"), p.Name)); //Generate header using reflection
 
-            XElement workbook = new XElement(mainNamespace + "Workbook",
+            XElement workbook = new(mainNamespace + "Workbook",
                 new XAttribute(XNamespace.Xmlns + "html", html),
                 new XAttribute(XName.Get("ss", "http://www.w3.org/2000/xmlns/"), ss),
                 new XAttribute(XName.Get("o", "http://www.w3.org/2000/xmlns/"), o),

@@ -1,5 +1,4 @@
 ﻿using Infrastructure;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Infrastructure.Interceptors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -24,6 +22,7 @@ public static class ConfigureServices
                 sqlOptions => sqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
         services.AddScoped<ApplicationDbContextInitialiser>();
+
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
 
         services.AddDefaultIdentity<ApplicationUser>()
@@ -130,10 +129,10 @@ public static class ConfigureServices
                     // If not found in query, check the Authorization header
                     if (string.IsNullOrEmpty(accessToken))
                     {
-                        var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+                        var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
                         if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
                         {
-                            accessToken = authHeader.Substring("Bearer ".Length).Trim();
+                            accessToken = authHeader["Bearer ".Length..].Trim();
                         }
                     }
 
@@ -161,7 +160,6 @@ public static class ConfigureServices
                     context.Token = accessToken;
                     return Task.CompletedTask;
                 }
-
             };
         });
 

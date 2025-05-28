@@ -10,20 +10,12 @@ namespace Common.Controllers.Attachment
     [ApiExplorerSettings(GroupName = "Common")]
     [ApiController]
     [Authorize]
-    public class AttachmentController : ControllerBase
-    {
-        private readonly IMediator _mediator;
-        public AttachmentController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-        
+    public class AttachmentController(IMediator _mediator) : ControllerBase
+    {        
         [HttpPost("DeleteFile")]
         public async Task<ActionResult<DeleteAttachmentCommandResult>> DeleteFile([FromForm] DeleteAttachmentCommand command)
         {
-
             return await this.HandleCommandResult(_mediator.Send(command));
-
         }
     }
 }

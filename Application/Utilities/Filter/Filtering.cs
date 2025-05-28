@@ -1,18 +1,11 @@
-﻿using Application.Utilities.Filter;
-using Application.Utilities.Contractors;
-using Application.Utilities.Models;
-using System;
-using System.Collections.Generic;
+﻿using Application.Utilities.Models;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Utilities.Filter
 {
     public static class Filtering
     {
-        private static readonly Dictionary<Type, Func<string, object>> DefaultValueParserMap = new Dictionary<Type, Func<string, object>>
+        private static readonly Dictionary<Type, Func<string, object>> DefaultValueParserMap = new()
         {
             [typeof(string)] = v => v,
             [typeof(int)] = v => int.Parse(v),
@@ -22,8 +15,6 @@ namespace Application.Utilities.Filter
             [typeof(Guid)] = v => Guid.Parse(v),
             [typeof(Guid?)] = v => !string.IsNullOrEmpty(v) ? Guid.Parse(v) : (Guid?)null,
         };
-
-
 
         public static IQueryable<TEntity> Filter<TEntity>(this IQueryable<TEntity> query, List<FilteredQuery> filters)
         {

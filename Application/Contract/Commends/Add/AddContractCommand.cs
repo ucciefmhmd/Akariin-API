@@ -11,7 +11,7 @@ namespace Application.Contract.Commends.Add
     public record AddContractCommand(
         string PaymentCycle, string AutomaticRenewal, string ContractRent, DateTime DateOfConclusion,
         DateTime StartDate, DateTime EndDate, string Type, decimal? TenantTax, string Status, IFormFile? ContractFile,
-        bool IsExecute, bool IsFinished, long RealEstateUnitId, long RealEstateId,
+        bool IsExecute, bool IsFinished, long RealEstateUnitId, long RealEstateId, decimal AdministrativeExpenses,
         long TenantId, long MarketerId, decimal PaymentAmount
     ) : IRequest<AddContractCommandResult>;
 
@@ -66,6 +66,7 @@ namespace Application.Contract.Commends.Add
                     TenantTax = request.TenantTax,
                     IsExecute = request.IsExecute,
                     IsFinished = request.IsFinished,
+                    AdministrativeExpenses = request.AdministrativeExpenses,
                     PaymentAmount = request.PaymentAmount,
                     RealEstateId = request.RealEstateId,
                     AutomaticRenewal = request.AutomaticRenewal,

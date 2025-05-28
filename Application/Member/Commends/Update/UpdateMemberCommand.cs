@@ -1,4 +1,5 @@
 ﻿using Application.Utilities.Models;
+using Domain.Common;
 using Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace Application.Owner.Commends.Update
         public string? City { get; set; }
         public string? Address { get; set; }
         public string PhoneNumber { get; set; }
+        public string IdentityNumber { get; init; }
         public string? UserId { get; set; }
         public string? Gender { get; set; }
         public string? Nationality { get; set; }
@@ -38,8 +40,8 @@ namespace Application.Owner.Commends.Update
                     return new UpdateMemberCommandResult
                     {
                         IsSuccess = false,
-                        Errors = new List<string> { "Owner not found" },
-                        ErrorCode = Domain.Common.ErrorCode.NotFound
+                        Errors = ["Owner not found"],
+                        ErrorCode = ErrorCode.NotFound
                     };
                 }
 
@@ -47,6 +49,7 @@ namespace Application.Owner.Commends.Update
                 owner.Address = request.dto.Address;
                 owner.PhoneNumber = request.dto.PhoneNumber;
                 owner.Nationality = request.dto.Nationality;
+                owner.IdentityNumber = request.dto.IdentityNumber;
                 owner.Role = request.dto.Role;
                 owner.Name = request.dto.Name;
                 owner.Gender = request.dto.Gender;
@@ -62,7 +65,7 @@ namespace Application.Owner.Commends.Update
                     return new UpdateMemberCommandResult
                     {
                         IsSuccess = false,
-                        Errors = validationResults.Select(vr => vr.ErrorMessage).ToList(),
+                        Errors = [.. validationResults.Select(vr => vr.ErrorMessage)],
                         ErrorCode = Domain.Common.ErrorCode.InvalidDate
                     };
                 }
@@ -81,8 +84,8 @@ namespace Application.Owner.Commends.Update
                 return new UpdateMemberCommandResult
                 {
                     IsSuccess = false,
-                    Errors = new List<string> { ex.Message },
-                    ErrorCode = Domain.Common.ErrorCode.Error
+                    Errors = [ ex.Message ],
+                    ErrorCode = ErrorCode.Error
                 };
             }
         }

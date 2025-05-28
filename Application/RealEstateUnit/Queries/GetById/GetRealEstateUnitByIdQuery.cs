@@ -1,7 +1,7 @@
 ﻿using Application.RealEstateUnit.Queries.GetAll;
 using Application.Services.File;
 using Application.Utilities.Models;
-using Domain.Models.RealEstates;
+using Domain.Common;
 using Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -100,7 +100,7 @@ namespace Application.RealEstateUnit.Queries.GetById
                 {
                     IsSuccess = false,
                     Errors = { ex.Message },
-                    ErrorCode = Domain.Common.ErrorCode.Error
+                    ErrorCode = ErrorCode.Error
                 };
             }
         }

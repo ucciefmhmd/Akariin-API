@@ -35,36 +35,11 @@ public class ApplicationUser : IdentityUser
     // profile
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
-    public string? AboutMe { get; set; }
-    public string? BusinessDescription { get; set; }
-    public string? CertificationAndAwards { get; set; }
-    public string? Affiliations { get; set; }
 
     [NotMapped]
     public string Role { get; set; }
-    public string? ZIP { get; set; }
-    // userPro
-    public string? AddressLine1 { get; set; }
-    public string? AddressLine2 { get; set; }
-    public string? Fax { get; set; }
-
-    //social media
-    public string? Facebook { get; set; }
-    public string? Twitter { get; set; }
-    public string? LinkedIn { get; set; }
-    public string? WebsiteOrBlog { get; set; }
 
     public UserType? UserType { get; set; }
-
-
-    //billingInfo
-    public string? BillingFirstName { get; set; }
-    public string? BillingFatherName { get; set; }
-    public string? BillingFamilyName { get; set; }
-    public string? BillingFullNameInEnglish { get; set; }
-    public string? BillingMainPhoneNumber { get; set; }
-    public string? BillingAlternativePhoneNumber { get; set; }
-
 
     [NotMapped]
     public string Image { get; set; } 

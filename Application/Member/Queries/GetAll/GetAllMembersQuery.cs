@@ -3,6 +3,7 @@ using Application.Utilities.Extensions;
 using Application.Utilities.Filter;
 using Application.Utilities.Models;
 using Application.Utilities.Sort;
+using Domain.Common;
 using Infrastructure;
 using MediatR;
 
@@ -25,6 +26,7 @@ namespace Application.Owner.Queries.GetAll
         public string? City { get; set; }
         public string? Address { get; set; }
         public string PhoneNumber { get; set; }
+        public string IdentityNumber { get; set; }
         public string? Gender { get; set; }
         public string? Nationality { get; set; }
         public string Role { get; set; }
@@ -49,6 +51,7 @@ namespace Application.Owner.Queries.GetAll
                         City = m.City,
                         Address = m.Address,
                         PhoneNumber = m.PhoneNumber,
+                        IdentityNumber = m.IdentityNumber,
                         Gender = m.Gender,
                         Nationality = m.Nationality,
                         Role = m.Role,
@@ -73,7 +76,7 @@ namespace Application.Owner.Queries.GetAll
                 {
                     IsSuccess = false,
                     Errors = { ex.Message },
-                    ErrorCode = Domain.Common.ErrorCode.Error
+                    ErrorCode = ErrorCode.Error
                 };
             }
         }

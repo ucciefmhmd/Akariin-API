@@ -10,7 +10,7 @@ namespace Domain.Common.Constants
 
         public static List<string> GetAllRoles()
         {
-            List<string> roles = new List<string>();
+            List<string> roles = [];
 
             // Get all public static readonly fields in the class
             var fields = typeof(Roles).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);

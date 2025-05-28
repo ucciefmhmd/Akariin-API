@@ -1,6 +1,7 @@
 ﻿using Application.Owner.Queries.GetAll;
 using Application.RealEstateUnit.Queries.GetAll;
 using Application.Utilities.Models;
+using Domain.Common;
 using Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,7 @@ namespace Application.Owner.Queries.GetById
                         City = m.City,
                         Address = m.Address,
                         PhoneNumber = m.PhoneNumber,
+                        IdentityNumber = m.IdentityNumber,
                         Gender = m.Gender,
                         Nationality = m.Nationality,
                         Role = m.Role,
@@ -60,7 +62,7 @@ namespace Application.Owner.Queries.GetById
                 {
                     IsSuccess = false,
                     Errors = { ex.Message },
-                    ErrorCode = Domain.Common.ErrorCode.Error
+                    ErrorCode = ErrorCode.Error
                 };
             }
         }

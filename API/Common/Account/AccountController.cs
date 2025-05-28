@@ -127,7 +127,6 @@ namespace Common.Controllers.Account
         //[Authorize(Roles = $"{Roles.ADMIN},{Roles.SUB_ADMIN}")]
         public async Task<ActionResult<UpdateUserRolesCommandResult>> UpdateUserRoles(UpdateUserRolesCommand updateUserRoles)
         {
-
             return await this.HandleCommandResult(_mediator.Send(updateUserRoles));
         }
 

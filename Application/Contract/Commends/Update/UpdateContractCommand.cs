@@ -8,8 +8,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Contract.Commends.Update
 {
-    public record UpdateContractCommand(long Id, string PaymentCycle, string AutomaticRenewal, string ContractRent, DateTime DateOfConclusion, 
-        DateTime StartDate, DateTime EndDate, string Type, decimal? TenantTax, string Status, IFormFile? ContractFile, bool IsExecute, 
+    public record UpdateContractCommand(long Id, string PaymentCycle, string AutomaticRenewal, string ContractRent, DateTime DateOfConclusion, DateTime StartDate, 
+        DateTime EndDate, string Type, decimal? TenantTax, string Status, IFormFile? ContractFile, bool IsExecute, decimal AdministrativeExpenses,
         bool IsFinished, long RealEstateUnitId, long RealEstateId, long TenantId, long MarketerId, decimal PaymentAmount) : IRequest<UpdateContractCommandResult>;
 
     public record UpdateContractCommandResult : BaseCommandResult
@@ -69,6 +69,7 @@ namespace Application.Contract.Commends.Update
                 contract.TenantTax = request.TenantTax;
                 contract.IsExecute = request.IsExecute;
                 contract.IsFinished = request.IsFinished;
+                contract.AdministrativeExpenses = request.AdministrativeExpenses;
                 contract.PaymentAmount = request.PaymentAmount;
                 contract.RealEstateId = request.RealEstateId;
                 contract.AutomaticRenewal = request.AutomaticRenewal;

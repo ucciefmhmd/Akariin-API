@@ -1,5 +1,4 @@
-﻿
-using Application.Utilities.Models;
+﻿using Application.Utilities.Models;
 using Domain.Identity;
 
 namespace Application.Services.UserService

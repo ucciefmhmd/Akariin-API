@@ -3,6 +3,7 @@ using Application.Utilities.Extensions;
 using Application.Utilities.Filter;
 using Application.Utilities.Models;
 using Application.Utilities.Sort;
+using Domain.Common;
 using Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace Application.RealEstateUnit.Queries.GetAll
     public record GetAllRealEstateUnitQuery : BasePaginatedQuery, IRequest<GetAllRealEstateUnitQueryResult>
     {
         public string? UserId { get; set; }
+        public bool? HasActiveContract { get; set; }
     }
 
     public record GetAllRealEstateUnitQueryResult : BaseCommandResult
@@ -33,8 +35,12 @@ namespace Application.RealEstateUnit.Queries.GetAll
         public long? TenantId { get; set; }
         public long RealEstateId { get; set; }
         public string RealEstateName { get; set; }
-        public CreatedByVM CreatedBy { get; set; }
-        public CreatedByVM ModifiedBy { get; set; }
+        public bool HasActiveContract { get; set; }
+        public bool HasInactiveContract { get; set; }
+        public int CountHasActiveContract { get; set; }
+        public int CountHasInactiveContract { get; set; }
+        public CreatedByVM? CreatedBy { get; set; }
+        public CreatedByVM? ModifiedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; } 
 
@@ -52,31 +58,48 @@ namespace Application.RealEstateUnit.Queries.GetAll
         {
             try
             {
-                var realEstateUnits = await _dbContext.RealEstateUnits
-                                                 .Include(re => re.Tenant)
-                                                 .Search(request.SearchTerm)
-                                                 .Where(re => !re.IsDeleted && (re.CreatedById == request.UserId || request.UserId == null))
-                                                 .Select(re => new RealEstateUnitDto
-                                                 {
-                                                     Id = re.Id,
-                                                     AnnualRent = re.AnnualRent,
-                                                     Area = re.Area,
-                                                     Floor = re.Floor,
-                                                     UnitNumber = re.UnitNumber,
-                                                     NumOfRooms = re.NumOfRooms,
-                                                     Type = re.Type,
-                                                     Status = re.Status,
-                                                     TenantId = re.TenantId,
-                                                     RealEstateId = re.RealEstateId,
-                                                     RealEstateName = re.RealEstate.Name,
-                                                     CreatedBy = re.CreatedBy != null ? new CreatedByVM { Name = re.CreatedBy.Name, Id = re.CreatedBy.Id } : null,
-                                                     ModifiedBy = re.ModifiedBy != null ? new CreatedByVM { Name = re.ModifiedBy.Name, Id = re.ModifiedBy.Id } : null,
-                                                     CreatedDate = re.CreatedDate,
-                                                     ModifiedDate = re.ModifiedDate,
-                                                 })
-                                                 .Filter(request.Filters)
-                                                 .Sort(request.Sorts ?? new List<SortedQuery>() { new SortedQuery() { PropertyName = "Name", Direction = SortDirection.ASC } })
-                                                 .ToPaginatedListAsync(request.PageNumber, request.PageSize);
+                var currentDate = DateTime.Now.Date;
+
+                var query = _dbContext.RealEstateUnits
+                    .Include(re => re.Tenant)
+                    .Include(re => re.Contracts.Where(c => !c.IsDeleted))
+                    .Search(request.SearchTerm)
+                    .Where(re => !re.IsDeleted && (re.CreatedById == request.UserId || request.UserId == null));
+
+                if (request.HasActiveContract.HasValue)
+                {
+                    if (request.HasActiveContract.Value)
+                        query = query.Where(re => re.Contracts.Any(c => !c.IsDeleted && !c.IsFinished && c.EndDate >= currentDate));
+                    else
+                        query = query.Where(re => re.Contracts.Any(c => !c.IsDeleted && (c.IsFinished || c.EndDate < currentDate)));
+                }
+
+
+                var realEstateUnits = await query.Select(re => new RealEstateUnitDto
+                {
+                    Id = re.Id,
+                    AnnualRent = re.AnnualRent,
+                    Area = re.Area,
+                    Floor = re.Floor,
+                    UnitNumber = re.UnitNumber,
+                    NumOfRooms = re.NumOfRooms,
+                    Type = re.Type,
+                    Status = re.Status,
+                    TenantId = re.TenantId,
+                    RealEstateId = re.RealEstateId,
+                    RealEstateName = re.RealEstate.Name,
+                    HasActiveContract = re.Contracts.Any(c => !c.IsDeleted && !c.IsFinished && c.EndDate >= currentDate),
+                    HasInactiveContract = re.Contracts.Any(c => !c.IsDeleted && (c.IsFinished || c.EndDate < currentDate)),
+                    CountHasActiveContract = re.Contracts.Count(c => !c.IsDeleted && !c.IsFinished && c.EndDate >= currentDate),
+                    CountHasInactiveContract = re.Contracts.Count(c => !c.IsDeleted && (c.IsFinished || c.EndDate < currentDate)),
+                    CreatedBy = re.CreatedBy != null ? new CreatedByVM { Name = re.CreatedBy.Name, Id = re.CreatedBy.Id } : null,
+                    ModifiedBy = re.ModifiedBy != null ? new CreatedByVM { Name = re.ModifiedBy.Name, Id = re.ModifiedBy.Id } : null,
+                    CreatedDate = re.CreatedDate,
+                    ModifiedDate = re.ModifiedDate,
+                })
+                .Filter(request.Filters)
+                .Sort(request.Sorts ?? [new SortedQuery() { PropertyName = "Name", Direction = SortDirection.ASC }])
+                .ToPaginatedListAsync(request.PageNumber, request.PageSize);
 
                 foreach (var realEstate in realEstateUnits.Items)
                 {
@@ -100,7 +123,7 @@ namespace Application.RealEstateUnit.Queries.GetAll
                 {
                     IsSuccess = false,
                     Errors = { ex.Message },
-                    ErrorCode = Domain.Common.ErrorCode.Error
+                    ErrorCode = ErrorCode.Error
                 };
             }
         }

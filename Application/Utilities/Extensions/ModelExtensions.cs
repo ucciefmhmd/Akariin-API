@@ -3,33 +3,24 @@ using Application.Utilities.Extensions;
 using Application.Utilities.Models;
 using Domain.Common;
 using Domain.Contractors;
-using Domain.Models;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Utilities.Extensions
 {
     public static class ModelExtensions
     {
 
-        public static IQueryable<T> IncludeAllLevels<T, TProperty>(
-        this IQueryable<T> query,
-        Expression<Func<T, TProperty>> navigationProperty
-    ) where T : class
+        public static IQueryable<T> IncludeAllLevels<T, TProperty>(this IQueryable<T> query,
+                                                                   Expression<Func<T, TProperty>> navigationProperty) where T : class
         {
             return IncludeAllLevelsRecursive(query, navigationProperty);
         }
 
-        private static IQueryable<T> IncludeAllLevelsRecursive<T, TProperty>(
-            IQueryable<T> query,
-            Expression<Func<T, TProperty>> navigationProperty
-        ) where T : class
+        private static IQueryable<T> IncludeAllLevelsRecursive<T, TProperty>(IQueryable<T> query,
+                                                                             Expression<Func<T, TProperty>> navigationProperty) where T : class
         {
             var includeString = GetIncludeString(navigationProperty);
             var subQuery = query.Include(includeString);
@@ -78,11 +69,10 @@ namespace Application.Utilities.Extensions
             return rootNodes;
         }
 
-        private static List<TProjection> SelectNodes<TEntity, TProjection>(
-            List<TEntity> nodes,
-            Expression<Func<TEntity, TProjection>> selector)
-            where TEntity : class
-            where TProjection : class
+        private static List<TProjection> SelectNodes<TEntity, TProjection>(List<TEntity> nodes,
+                                                                           Expression<Func<TEntity, TProjection>> selector)
+                                                                           where TEntity : class
+                                                                           where TProjection : class
         {
             var selectedNodes = new List<TProjection>();
 
@@ -109,19 +99,14 @@ namespace Application.Utilities.Extensions
         private static void SetChildrenList<TEntity>(TEntity entity, List<TEntity> childrenList) where TEntity : class => entity.GetType().GetProperty("Children")?.SetValue(entity, childrenList);
 
 
-
-
-
-        public static IQueryable<TEntity> Include<TEntity>(
-         this IQueryable<TEntity> source,
-         int level,
-         Expression<Func<TEntity, object>> expression)
-         where TEntity : class
+        public static IQueryable<TEntity> Include<TEntity>(this IQueryable<TEntity> source,
+                                                           int level,
+                                                           Expression<Func<TEntity, object>> expression) where TEntity : class
         {
             if (level < 0) level = source.Count();
 
-            var memberExpression = expression.Body as MemberExpression;
-            if (memberExpression == null)
+
+            if (expression.Body is not MemberExpression memberExpression)
             {
                 throw new ArgumentException("Expression must be a MemberExpression");
             }
@@ -129,14 +114,11 @@ namespace Application.Utilities.Extensions
             var propertyName = memberExpression.Member.Name;
 
             // Use reflection to get the property info
-            var propertyInfo = memberExpression.Member as PropertyInfo;
-            if (propertyInfo == null)
-            {
-                throw new ArgumentException("Expression must be a property expression");
-            }
+            _ = memberExpression.Member as PropertyInfo ?? throw new ArgumentException("Expression must be a property expression");
 
             // Build the include path
             var includePath = new StringBuilder(propertyName);
+
             for (int i = 1; i < level; i++)
             {
                 includePath.Append($".{propertyName}");
@@ -153,13 +135,12 @@ namespace Application.Utilities.Extensions
                 source.Remove(item);
             }
         }
-        public static async Task<List<TProjection>> LoadAllItemsWithSubitemsAsync<TEntity, TCollection, TProjection>(
-    this DbContext dbContext,
-    TEntity entity,
-    Expression<Func<TEntity, TCollection>> navigationProperty,
-    Expression<Func<TEntity, TProjection>> selector)
-    where TEntity : class
-    where TCollection : ICollection<TEntity>
+        public static async Task<List<TProjection>> LoadAllItemsWithSubitemsAsync<TEntity, TCollection, TProjection>(this DbContext dbContext,
+                                                                                                                     TEntity entity,
+                                                                                                                     Expression<Func<TEntity, TCollection>> navigationProperty,
+                                                                                                                     Expression<Func<TEntity, TProjection>> selector)
+                                                                                                                     where TEntity : class
+                                                                                                                     where TCollection : ICollection<TEntity>
         {
             var navigationPropertyName = GetPropertyName(navigationProperty);
 
@@ -185,13 +166,15 @@ namespace Application.Utilities.Extensions
                 return flatSubitems;
             }
 
-            return new List<TProjection> { selector.Compile()(entity) };
+            return [selector.Compile()(entity)];
         }
 
-        public static async Task<List<TEntity>> LoadAllItemsWithSubitemsAsync<TEntity, TCollection>(
-        this DbContext dbContext, TEntity entity, Expression<Func<TEntity, TCollection>> navigationProperty)
-        where TEntity : class
-        where TCollection : ICollection<TEntity>
+        public static async Task<List<TEntity>> LoadAllItemsWithSubitemsAsync<TEntity, TCollection>(this DbContext dbContext, 
+                                                                                                    TEntity entity, 
+                                                                                                    Expression<Func<TEntity, 
+                                                                                                    TCollection>> navigationProperty)
+                                                                                                    where TEntity : class
+                                                                                                    where TCollection : ICollection<TEntity>
         {
             var navigationPropertyName = GetPropertyName(navigationProperty);
 
@@ -217,13 +200,15 @@ namespace Application.Utilities.Extensions
                 return flatSubitems;
             }
 
-            return new List<TEntity> { entity };
+            return [entity];
         }
 
-        public static async Task LoadChildEntitiesAsync<TEntity, TCollection>(
-    this DbContext dbContext, TEntity entity, Expression<Func<TEntity, TCollection>> navigationProperty)
-    where TEntity : class
-    where TCollection : ICollection<TEntity>
+        public static async Task LoadChildEntitiesAsync<TEntity, TCollection>(this DbContext dbContext, 
+                                                                              TEntity entity, 
+                                                                              Expression<Func<TEntity, 
+                                                                              TCollection>> navigationProperty)
+                                                                              where TEntity : class
+                                                                              where TCollection : ICollection<TEntity>
         {
             var navigationPropertyName = GetPropertyName(navigationProperty);
 
@@ -246,8 +231,7 @@ namespace Application.Utilities.Extensions
 
         public static string GetPropertyName<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> expression)
         {
-            var memberExpression = expression.Body as MemberExpression;
-            if (memberExpression == null)
+            if (expression.Body is not MemberExpression memberExpression)
                 throw new ArgumentException("Expression is not a member access expression.");
             return memberExpression.Member.Name;
         }
@@ -302,6 +286,7 @@ namespace Application.Utilities.Extensions
                     !prop.Name.EndsWith("id", StringComparison.OrdinalIgnoreCase));
 
             var parameter = Expression.Parameter(typeof(T), "x");
+
             Expression body = Expression.Constant(false); // Initialize with false
 
             foreach (var property in properties)
@@ -336,6 +321,7 @@ namespace Application.Utilities.Extensions
         {
             return values.All(value => value == null);
         }
+
         public static bool AllHaveValue(params object[] values)
         {
             return values.All(value => value != null);

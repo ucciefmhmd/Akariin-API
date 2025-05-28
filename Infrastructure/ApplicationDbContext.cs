@@ -14,21 +14,13 @@ using Domain.Models.RoleSysem;
 using Domain.Models.Members;
 using Domain.Models.MaintenanceRequests;
 
-
 namespace Infrastructure;
 
-public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
-{
-    private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;
-
-    public ApplicationDbContext(
-        DbContextOptions<ApplicationDbContext> options, IOptions<OperationalStoreOptions> operationalStoreOptions
+public class ApplicationDbContext(
+    DbContextOptions<ApplicationDbContext> options, IOptions<OperationalStoreOptions> operationalStoreOptions
         , AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor
-        ) : base(options,operationalStoreOptions)
-    {
-        this._auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
-    }
-
+        ) : ApiAuthorizationDbContext<ApplicationUser>(options,operationalStoreOptions)
+{
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
@@ -43,7 +35,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
 
         modelBuilder.Entity<Contract>()
             .HasOne(c => c.RealEstate)
-            .WithMany()
+            .WithMany() 
             .HasForeignKey(c => c.RealEstateId)
             .OnDelete(DeleteBehavior.NoAction);
 
@@ -112,7 +104,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
         optionsBuilder.EnableSensitiveDataLogging();
 
-        optionsBuilder.AddInterceptors(_auditableEntitySaveChangesInterceptor);
+        optionsBuilder.AddInterceptors(auditableEntitySaveChangesInterceptor);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

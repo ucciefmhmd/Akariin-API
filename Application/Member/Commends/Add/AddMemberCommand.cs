@@ -18,6 +18,7 @@ namespace Application.Owner.Commends.Add
         public string? City { get; set; }
         public string? Address { get; set; }
         public string PhoneNumber { get; set; }
+        public string IdentityNumber { get; init; }
         public string? UserId { get; set; }
         public string? Gender { get; set; }
         public string? Nationality { get; set; }
@@ -35,6 +36,7 @@ namespace Application.Owner.Commends.Add
                     City = request.dto.City,
                     Address = request.dto.Address,
                     PhoneNumber = request.dto.PhoneNumber,
+                    IdentityNumber = request.dto.IdentityNumber,
                     Nationality = request.dto.Nationality,
                     Role = request.dto.Role,
                     Name = request.dto.Name,
@@ -54,7 +56,7 @@ namespace Application.Owner.Commends.Add
                     return new AddMemberCommandResult
                     {
                         IsSuccess = false,
-                        Errors = validationResults.Select(vr => vr.ErrorMessage).ToList(),
+                        Errors = [.. validationResults.Select(vr => vr.ErrorMessage)],
                         ErrorCode = Domain.Common.ErrorCode.InvalidDate
                     };
                 }

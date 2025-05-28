@@ -4,14 +4,8 @@ using Application.Utilities.Models;
 
 namespace Application.Services.File
 {
-    public sealed class AttachmentService
+    public sealed class AttachmentService(IFileService _fileService)
     {
-        private readonly IFileService _fileService;
-
-        public AttachmentService(IFileService fileService)
-        {
-            this._fileService = fileService;
-        }
         public async Task DeleteFilesAsync(string Id)
         {
             await _fileService.DeleteFilesAsync(Id);

@@ -25,6 +25,9 @@ namespace Application.Bill.Queries.GetAll
         public DateTime BillDate { get; set; }
         public string BillNumber { get; set; }
         public long TenantId { get; set; }
+        public string TenantName { get; set; }
+        public string? TenantAddress { get; set; }
+        public string TenantPhoneNumber { get; set; }
         public string? IssuedBy { get; set; }
         public long MarketerId { get; set; }
         public StatusBills StatusBills { get; set; } = StatusBills.Pending;
@@ -63,6 +66,9 @@ namespace Application.Bill.Queries.GetAll
                                                 Discount = b.Discount,
                                                 Tax = b.Tax,
                                                 TenantId = b.TenantId,
+                                                TenantName = b.Tenant.Name,
+                                                TenantAddress = b.Tenant.Address,
+                                                TenantPhoneNumber = b.Tenant.PhoneNumber,
                                                 MarketerId = b.MarketerId,
                                                 ContractId = b.Contract.Id,
                                                 CreatedBy = b.CreatedBy != null ? new CreatedByVM { Name = b.CreatedBy.Name, Id = b.CreatedBy.Id } : null,

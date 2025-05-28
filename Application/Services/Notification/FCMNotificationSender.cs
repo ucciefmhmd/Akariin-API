@@ -1,18 +1,11 @@
-﻿using FirebaseAdmin;
-using FirebaseAdmin.Auth;
-using FirebaseAdmin.Messaging;
+﻿using FirebaseAdmin.Messaging;
 using Application.Utilities.Contractors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services.Notificationsd
 {
     public class FCMNotificationSender : INotificationSender
     {
-        public async Task SendAsync(string to, string title, string body, Dictionary<string, string> data = null)
+        public async Task SendAsync(string to, string title, string body, Dictionary<string, string>? data = null)
         {
             var message = new Message()
             {

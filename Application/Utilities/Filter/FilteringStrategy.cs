@@ -96,8 +96,9 @@ namespace Application.Utilities.Filter
             }
 
             if (propertyType.IsValueType ||
-    propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>) &&
-     Nullable.GetUnderlyingType(propertyType)?.IsEnum == true)
+                propertyType.IsGenericType && 
+                propertyType.GetGenericTypeDefinition() == typeof(Nullable<>) &&
+                Nullable.GetUnderlyingType(propertyType)?.IsEnum == true)
             {
                 if (propertyType == typeof(Guid))
                 {
@@ -110,10 +111,10 @@ namespace Application.Utilities.Filter
                 return GetNullableEnumFilter<TEntity>(filter.PropertyName, filter.Values, propertyType);
             }
 
-            throw new ArgumentException("Unexpected filter type " + filter.Type, "filter");
+            throw new ArgumentException("Unexpected filter type " + filter.Type, nameof(filter));
         }
         
-        private Expression<Func<TEntity, bool>> GetGuidFilter<TEntity>(string propertyName, IEnumerable<string> values)
+        private static Expression<Func<TEntity, bool>> GetGuidFilter<TEntity>(string propertyName, IEnumerable<string> values)
         {
             if (values == null || !values.Any())
             {
@@ -121,6 +122,7 @@ namespace Application.Utilities.Filter
             }
 
             var parameterExp = Expression.Parameter(typeof(TEntity), "entity");
+
             var propertyExp = Expression.Property(parameterExp, propertyName);
 
             var guidValues = values
@@ -137,8 +139,8 @@ namespace Application.Utilities.Filter
             var arrayExpression = Expression.NewArrayInit(typeof(Guid), guidValues.Select(value => Expression.Constant(value)));
 
             var containsMethod = typeof(Enumerable).GetMethods()
-                .FirstOrDefault(method => method.Name == "Contains" && method.GetParameters().Length == 2)?
-                .MakeGenericMethod(typeof(Guid));
+                    .FirstOrDefault(method => method.Name == "Contains" && method.GetParameters().Length == 2)?
+                    .MakeGenericMethod(typeof(Guid));
 
             var containsCall = Expression.Call(null, containsMethod!, arrayExpression, propertyExp);
             var lambda = Expression.Lambda<Func<TEntity, bool>>(containsCall, parameterExp);
@@ -146,7 +148,7 @@ namespace Application.Utilities.Filter
             return lambda;
         }
 
-        private Expression<Func<TEntity, bool>> GetNullableGuidFilter<TEntity>(string propertyName, IEnumerable<string> values)
+        private static Expression<Func<TEntity, bool>> GetNullableGuidFilter<TEntity>(string propertyName, IEnumerable<string> values)
         {
             if (values == null || !values.Any())
             {
@@ -251,7 +253,7 @@ namespace Application.Utilities.Filter
             return lambda;
         }
 
-        private Expression<Func<TEntity, bool>> GetEnumFilter<TEntity>(string propertyName, IEnumerable<string> values, Type enumType)
+        private static Expression<Func<TEntity, bool>> GetEnumFilter<TEntity>(string propertyName, IEnumerable<string> values, Type enumType)
         {
             if (values == null || !values.Any())
             {

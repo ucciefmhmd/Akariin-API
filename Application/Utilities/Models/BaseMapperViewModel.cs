@@ -1,13 +1,6 @@
-﻿using AutoMapper;
-using Domain.Contractors;
+﻿using Domain.Contractors;
 using Domain.Identity;
-using Domain.Models;
 using Mapster;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Utilities.Models
 {

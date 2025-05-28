@@ -37,6 +37,7 @@ namespace Application.Contract.Queries.GetAll
         public string ContractFile { get; set; }
         public bool IsExecute { get; set; }
         public bool IsFinished { get; set; }
+        public decimal AdministrativeExpenses { get; set; }
         public decimal PaymentAmount { get; set; }
         public long RealEstateUnitId { get; set; }
         public string RealEstateUnitNumber { get; set; }
@@ -76,6 +77,7 @@ namespace Application.Contract.Queries.GetAll
                                             Type = c.Type,
                                             IsExecute = c.IsExecute,
                                             IsFinished = c.IsFinished,
+                                            AdministrativeExpenses = c.AdministrativeExpenses,
                                             PaymentCycle = c.PaymentCycle,
                                             PaymentAmount = c.PaymentAmount,
                                             Status = c.Status,

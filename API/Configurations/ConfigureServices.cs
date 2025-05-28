@@ -112,6 +112,12 @@ public static class ConfigureServices
                 Title = "Common API",
             });
 
+            swagger.SwaggerDoc("Summary", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Summary API",
+            });
+
             //~ Add custom document filters
             swagger.DocumentFilter<CustomConstantsDocumentFilter<Roles>>();
             //swagger.DocumentFilter<CustomConstantsDocumentFilter<Policies>>();

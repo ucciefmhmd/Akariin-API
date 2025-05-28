@@ -37,6 +37,7 @@ namespace Application.Contract.Queries.GetById
                                             Type = c.Type,
                                             IsExecute = c.IsExecute,
                                             IsFinished = c.IsFinished,
+                                            AdministrativeExpenses = c.AdministrativeExpenses,
                                             PaymentCycle = c.PaymentCycle,
                                             Status = c.Status,
                                             TenantTax = c.TenantTax,

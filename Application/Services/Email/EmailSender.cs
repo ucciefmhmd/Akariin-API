@@ -1,26 +1,15 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Application.Utilities.Contractors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services.Email
 {
-    public sealed class EmailSender : INotificationSender
+    public sealed class EmailSender(IConfiguration _configuration) : INotificationSender
     {
-        private readonly IConfiguration _configuration;
-
-        public EmailSender(IConfiguration configuration) {
-            _configuration = configuration;
-        }
-        public async Task SendAsync(string To, string Title, string Body, Dictionary<string, string> Data = null)
+        public async Task SendAsync(string To, string Title, string Body, Dictionary<string, string>? Data = null)
         {
-            SmtpClient smtpClient = new SmtpClient
+            SmtpClient smtpClient = new()
             {
                 Port = int.Parse(_configuration["MailSettings:Port"]),
                 Host = _configuration["MailSettings:Host"],
@@ -32,9 +21,9 @@ namespace Application.Services.Email
             string senderEmail = _configuration["MailSettings:Mail"];
             string senderDisplayName = _configuration["MailSettings:DisplayName"];
 
-            MailAddress senderAddress = new MailAddress(senderEmail, senderDisplayName);
-            MailAddress toAddress = new MailAddress(To);
-            MailMessage mailMessage = new MailMessage(senderAddress, toAddress)
+            MailAddress senderAddress = new(senderEmail, senderDisplayName);
+            MailAddress toAddress = new(To);
+            MailMessage mailMessage = new(senderAddress, toAddress)
             {
                 Subject = Title,
                 Body = Body,

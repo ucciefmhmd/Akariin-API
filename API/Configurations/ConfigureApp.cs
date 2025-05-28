@@ -10,12 +10,9 @@ namespace Configurations
         {
             if (app.Environment.IsDevelopment())
             {
-                // Initialise and seed database
-                using (var scope = app.Services.CreateScope())
-                {
-                    var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-                    initialiser.InitialiseAsync().Wait();
-                }
+                using var scope = app.Services.CreateScope();
+                var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+                initialiser.InitialiseAsync().Wait();
             }
 
             app.UseSwagger();
@@ -28,6 +25,7 @@ namespace Configurations
                 c.SwaggerEndpoint("/swagger/Bill/swagger.json", "Bill API v1");
                 c.SwaggerEndpoint("/swagger/RealEstateUnit/swagger.json", "Real Estate Unit API v1");
                 c.SwaggerEndpoint("/swagger/MaintenanceRequest/swagger.json", "MaintenanceRequest API v1");
+                c.SwaggerEndpoint("/swagger/Summary/swagger.json", "Summary API v1");
 
                 c.RoutePrefix = "swagger";
                 c.DocExpansion(DocExpansion.None);
@@ -47,11 +45,10 @@ namespace Configurations
             app.UseAuthorization();
             app.UseAntiforgery();
 
-#pragma warning disable ASP0014 // Suggest using top level route registrations
             app.UseEndpoints(endpoints => endpoints.MapControllerRoute(
                 name: "default",
                 pattern: "{controller}/{action=Index}/{id?}"));
-#pragma warning restore ASP0014 // Suggest using top level route registrations
+
             //app.UseEndpoints(endpoints =>
             //{
             //    endpoints.MapHub<ChatHub>("/chathub");
@@ -60,7 +57,6 @@ namespace Configurations
             app.MapControllers();
             app.MapFallbackToFile("index.html");
     
-            
             return app;
         }
     }

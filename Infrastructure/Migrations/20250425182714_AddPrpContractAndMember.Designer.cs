@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250425182714_AddPrpContractAndMember")]
+    partial class AddPrpContractAndMember
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,7 +187,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Bills", (string)null);
+                    b.ToTable("Bills");
                 });
 
             modelBuilder.Entity("Domain.Models.Contracts.Contract", b =>
@@ -300,7 +303,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Contracts", (string)null);
+                    b.ToTable("Contracts");
                 });
 
             modelBuilder.Entity("Domain.Models.MaintenanceRequests.MaintenanceRequest", b =>
@@ -392,7 +395,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("MaintenanceRequests", (string)null);
+                    b.ToTable("MaintenanceRequests");
                 });
 
             modelBuilder.Entity("Domain.Models.Members.Member", b =>
@@ -458,7 +461,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ModifiedById");
 
-                    b.ToTable("Members", (string)null);
+                    b.ToTable("Members");
                 });
 
             modelBuilder.Entity("Domain.Models.RealEstateUnits.RealEstateUnit", b =>
@@ -543,7 +546,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("RealEstateUnits", (string)null);
+                    b.ToTable("RealEstateUnits");
                 });
 
             modelBuilder.Entity("Domain.Models.RealEstates.RealEstate", b =>
@@ -639,7 +642,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("RealEstates", (string)null);
+                    b.ToTable("RealEstates");
                 });
 
             modelBuilder.Entity("Domain.Models.RoleSysem.Page", b =>
@@ -680,7 +683,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ModifiedById");
 
-                    b.ToTable("Pages", (string)null);
+                    b.ToTable("Pages");
                 });
 
             modelBuilder.Entity("Domain.Models.RoleSysem.UserPageRole", b =>
@@ -708,7 +711,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserPageRoles", (string)null);
+                    b.ToTable("UserPageRoles");
                 });
 
             modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.DeviceFlowCodes", b =>

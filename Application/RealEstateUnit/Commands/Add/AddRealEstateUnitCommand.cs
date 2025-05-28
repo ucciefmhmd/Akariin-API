@@ -1,12 +1,16 @@
 ﻿using Application.Services.File;
 using Application.Utilities.Models;
+using Domain.Common;
 using Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
+
 namespace Application.RealEstateUnit.Commends.Add
 {
-    public record AddRealEstateUnitCommand(string AnnualRent, string Area, string Floor, string UnitNumber, string NumOfRooms, string Type, string? GasMeter, string? WaterMeter, string? ElectricityCalculation, string Status, IFormFile? Image, long? TenantId, long RealEstateId) : IRequest<AddRealEstateUnitCommendResult>;
+    public record AddRealEstateUnitCommand(string AnnualRent, string Area, string Floor, string UnitNumber, string NumOfRooms,
+        string Type, string? GasMeter, string? WaterMeter, string? ElectricityCalculation, string Status, 
+        IFormFile? Image, long? TenantId, long RealEstateId) : IRequest<AddRealEstateUnitCommendResult>;
 
     public record AddRealEstateUnitCommendResult : BaseCommandResult
     {
@@ -46,21 +50,17 @@ namespace Application.RealEstateUnit.Commends.Add
                     return new AddRealEstateUnitCommendResult
                     {
                         IsSuccess = false,
-                        Errors = validationResults.Select(vr => vr.ErrorMessage).ToList(),
-                        ErrorCode = Domain.Common.ErrorCode.InvalidDate
+                        Errors = [.. validationResults.Select(vr => vr.ErrorMessage)],
+                        ErrorCode = ErrorCode.InvalidDate
                     };
                 }
 
                 await _dbContext.RealEstateUnits.AddAsync(realEstateUnit, cancellationToken);
-
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                // Upload the image if provided
                 if (request.Image is not null)
-                {
                     await _attachmentService.UploadFilesAsync(Path.Combine("profiles", realEstateUnit.Id.ToString()), request.Image);
-                }
-
+                
                 return new AddRealEstateUnitCommendResult
                 {
                     IsSuccess = true,
@@ -73,7 +73,7 @@ namespace Application.RealEstateUnit.Commends.Add
                 {
                     IsSuccess = false,
                     Errors = { ex.Message },
-                    ErrorCode = Domain.Common.ErrorCode.Error
+                    ErrorCode = ErrorCode.Error
                 };
             }
         }

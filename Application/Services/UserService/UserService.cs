@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -12,23 +11,12 @@ using System.Security.Claims;
 
 namespace Application.Services.UserService
 {
-    public sealed class UserService : IUserService
+    public sealed class UserService(ApplicationDbContext _dbContext, 
+                                    UserManager<ApplicationUser> _userManager,
+                                    IHttpContextAccessor _httpContext,
+                                    IMemoryCache _memoryCache) : IUserService
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IHttpContextAccessor _httpContext;
-        private readonly IMemoryCache _memoryCache;
 
-        public UserService(ApplicationDbContext dbContext,UserManager<ApplicationUser> userManager, 
-            IHttpContextAccessor httpContext,
-            IMemoryCache memoryCache)
-        {
-            this._dbContext = dbContext;
-            this._userManager = userManager;
-            this._httpContext = httpContext;
-            _memoryCache = memoryCache;
-
-        }
         public async Task<string> GetSecurityStamp(string Id)
         {
             var user = await _userManager.FindByIdAsync(Id);
@@ -76,9 +64,10 @@ namespace Application.Services.UserService
                 return new BaseCommandResult() { ErrorCode = Domain.Common.ErrorCode.NotFound, IsSuccess = false, Errors = { ex.Message }};
             }
         }
+
         public async Task<string> GenerateResetCodeAsync(string userId)
         {
-            Random random = new Random();
+            Random random = new();
 
             int resetCode = random.Next(100000, 1000000);
 
@@ -105,12 +94,12 @@ namespace Application.Services.UserService
                 return false;
             });
         }
+
         public async Task<ApplicationUser> GetCurrentUserAsync()
         {
             var userId = _httpContext.HttpContext?.User.FindFirstValue(JwtRegisteredClaimNames.Jti);
             return await _userManager.FindByIdAsync(userId);
         }
-      
 
         public async Task<bool> CheckAdminPermissionAsync()
         {
